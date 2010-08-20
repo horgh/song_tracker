@@ -1,0 +1,11 @@
+#just_played {
+	width: 100%;
+}
+
+#just_played th {
+	border: 1px solid black;
+}
+
+#just_played td {
+	text-align: center;
+}
