@@ -35,6 +35,9 @@ class Database {
 	}
 
 	public function add_play($artist, $album, $title, $length) {
+		if ($this->repeat($artist, $album, $title, $length)) {
+			return false;
+		}
 		$this->statement->prepare(self::$_INSERT);
 		$this->statement->bind_param(self::$_INSERT_TYPE, $artist, $album, $title, $length);
 		$this->statement->execute();
@@ -51,6 +54,13 @@ class Database {
 			$songs[] = new Song($id, $date, $artist, $album, $title, $length);
 		}
 		return $songs;
+	}
+
+	// True if last played song is identical to this one
+	private function repeat($artist, $album, $title, $length) {
+		$last = $this->get_songs(1);
+		$last = $last[0];
+		return $last->get_artist() == $artist && $last->get_album() == $album && $last->get_title() == $title && $last->get_length() == $length;
 	}
 }
 ?>
