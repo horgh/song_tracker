@@ -41,8 +41,7 @@ class Database {
 		return true;
 	}
 
-	public function get_songs() {
-		$count = 20;
+	public function get_songs($count) {
 		$this->statement->prepare(self::$_PLAYS);
 		$this->statement->bind_param(self::$_PLAYS_TYPE, $count);
 		$this->statement->execute();

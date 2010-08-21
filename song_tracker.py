@@ -21,11 +21,14 @@ MOC_COMMAND = "/home/will/t/mocp-dev2/bin/mocp -i"
 # http://leviathan.summercat.com/~a/music/index.php
 UPDATE_SITE = "leviathan.summercat.com"
 UPDATE_PATH = "/~a/music/index.php"
+# This password must be same as password in song_tracker PHP
+PASSWORD = "a110e6b9a361653a042e3f5dfbac4c6105693789"
 
 import time
 import http.client
 import urllib.parse
 import os
+import hashlib
 
 def send_song_http(song):
 	params = urllib.parse.urlencode(song)
@@ -60,6 +63,7 @@ def get_current_song():
 	result["album"] = album
 	result["title"] = title
 	result["length"] = length
+	result["pass"] = PASSWORD
 	return result
 
 def begin():
