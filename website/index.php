@@ -26,12 +26,7 @@ if (isset($_POST['artist']) && isset($_POST['album']) && isset($_POST['title']) 
 		print("Invalid password.");
 		exit();
 	}
-	$artist = urldecode($_POST['artist']);
-	$album = urldecode($_POST['album']);
-	$title = urldecode($_POST['title']);
-	$length = urldecode($_POST['length']);
-
-	$db->add_play($artist, $album, $title, $length);
+	$db->add_play($_POST['artist'], $_POST['album'], $_POST['title'], $_POST['length']);
 
 // Last song played in plain text for script (for now playing)
 } elseif (isset($_GET['last'])) {

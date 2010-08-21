@@ -36,12 +36,13 @@ def send_song_http(song):
 		"Accept": "text/plain"}
 	conn = http.client.HTTPConnection(UPDATE_SITE)
 	conn.request("POST", UPDATE_PATH, params, headers)
-	# can check status here:
+	conn.close()
+	# Debug
+	#print("Params:", params)
 	#response = conn.getresponse()
 	#print("status: " + str(response.status))
 	#print(response.read())
 	#response.reason
-	conn.close()
 
 def get_after_prefix(s):
 	return s[s.index(":")+2:]

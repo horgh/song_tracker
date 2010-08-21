@@ -35,6 +35,9 @@ class Database {
 	}
 
 	public function add_play($artist, $album, $title, $length) {
+		$album = stripslashes($album);
+		$artist = stripslashes($artist);
+		$title = stripslashes($title);
 		if ($this->repeat($artist, $album, $title, $length)) {
 			return false;
 		}
