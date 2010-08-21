@@ -2,6 +2,9 @@
 # 20/08/2010
 # by horgh
 #
+# Irssi script that provides /np functionality (say current listening track
+# as read from website)
+#
 # Intended for use with song_tracker PHP website script
 #
 # The config variable $url must be set

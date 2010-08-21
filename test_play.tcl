@@ -1,4 +1,8 @@
 #!/usr/bin/env tclsh8.5
+#
+# Send a test song update to the website
+#
+
 package require http
 
 set url http://leviathan.summercat.com/~a/music/music.php
