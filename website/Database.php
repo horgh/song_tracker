@@ -26,6 +26,9 @@ class Database {
 			print("MySQL connection error!");
 			exit();
 		}
+		if (!$this->mysqli->set_charset("utf8")) {
+			printf("Error setting charset utf8: %s\n", $this->mysqli->error);
+		}
 		$this->statement = $this->mysqli->stmt_init();
 	}
 

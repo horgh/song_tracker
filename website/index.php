@@ -18,6 +18,7 @@ require_once("Database.php");
 require_once("Song.php");
 
 $db = new Database();
+header("Content-type: text/html; charset=utf-8");
 
 // Update sent
 if (isset($_POST['artist']) && isset($_POST['album']) && isset($_POST['title']) && isset($_POST['length']) && isset($_POST['pass'])) {
@@ -26,6 +27,11 @@ if (isset($_POST['artist']) && isset($_POST['album']) && isset($_POST['title']) 
 		print("Invalid password.");
 		exit();
 	}
+	/*
+	$debug = "a " . $_POST['artist'] . " al " . $_POST['album'] . " ti " . $_POST['title'];
+	print($debug . "\n");
+	print(urldecode($debug) . "\n");
+	*/
 	$db->add_play($_POST['artist'], $_POST['album'], $_POST['title'], $_POST['length']);
 
 // Last song played in plain text for script (for now playing)

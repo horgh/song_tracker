@@ -27,13 +27,13 @@ def send_song_http(song):
 		"Accept": "text/plain"}
 	conn = http.client.HTTPConnection(UPDATE_SITE)
 	conn.request("POST", UPDATE_PATH, params, headers)
-	conn.close()
 	# Debug
 	#print("Params:", params)
 	#response = conn.getresponse()
 	#print("status: " + str(response.status))
 	#print(response.read())
 	#response.reason
+	conn.close()
 
 if len(sys.argv) != 5:
 	print("Usage: %s <artist> <album> <song> <length>" % sys.argv[0])
