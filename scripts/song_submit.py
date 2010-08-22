@@ -14,8 +14,9 @@
 
 # http://leviathan.summercat.com/~a/music/index.php
 UPDATE_SITE = "leviathan.summercat.com"
-UPDATE_PATH = "/~a/music/index.php"
-PASSWORD = "a110e6b9a361653a042e3f5dfbac4c6105693789"
+UPDATE_PATH = "/~a/music/api.php"
+USERNAME = "cd"
+PASSWORD = "password"
 
 import sys
 import http.client, urllib.parse, hashlib
@@ -29,9 +30,9 @@ def send_song_http(song):
 	conn.request("POST", UPDATE_PATH, params, headers)
 	# Debug
 	#print("Params:", params)
-	#response = conn.getresponse()
+	response = conn.getresponse()
 	#print("status: " + str(response.status))
-	#print(response.read())
+	print(response.read())
 	#response.reason
 	conn.close()
 
@@ -44,5 +45,6 @@ params["album"] = sys.argv[2]
 params["title"] = sys.argv[3]
 params["length"] = sys.argv[4]
 params["pass"] = PASSWORD
+params["user"] = USERNAME
 
 send_song_http(params)

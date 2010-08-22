@@ -29,7 +29,8 @@ $VERSION = "0.1";
 );
 
 # Configuration
-my $url = "http://leviathan.summercat.com/~a/music/index.php?last";
+my $username = "cd";
+my $url = "http://leviathan.summercat.com/~a/music/api.php?last=1&user=$username";
 
 sub get_song {
 	my $result = get($url);
