@@ -38,6 +38,7 @@ class Database {
 		$album = stripslashes($album);
 		$artist = stripslashes($artist);
 		$title = stripslashes($title);
+		$length = $this->fix_length($length);
 		if ($this->repeat($artist, $album, $title, $length)) {
 			return false;
 		}
@@ -64,6 +65,18 @@ class Database {
 		$last = $this->get_songs(1);
 		$last = $last[0];
 		return $last->get_artist() == $artist && $last->get_album() == $album && $last->get_title() == $title && $last->get_length() == $length;
+	}
+
+	// Check if length is given in form mm:ss or milliseconds, return in form of
+	// mm:ss
+	private function fix_length($length) {
+		// If no ":" found, assume time given in milliseconds
+		if (strpos($length, ":") === false) {
+			$minutes = round($length / 1000 / 60, 0, PHP_ROUND_HALF_DOWN);
+			$seconds = $length / 1000 % 60;
+			$length = sprintf("%02d:%02d", $minutes, $seconds);
+		}
+		return $length;
 	}
 }
 ?>
