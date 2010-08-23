@@ -14,6 +14,10 @@
 	margin-right: 5%;
 }
 
+#top_songs .label {
+	text-align: left;
+}
+
 /*
 #top_artists, #top_songs {
 	width: 60%;

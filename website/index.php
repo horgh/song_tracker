@@ -50,8 +50,8 @@ if (isset($_GET['user'])) {
 	$graphs = new Graphs($userid, 10);
 	foreach ($graphs->get_artists() as $artist) {
 		print("<tr>");
-		print("<td>" . $artist["label"] . "</td>");
-		print("<td>" . $artist["count"] . "</td>");
+		print("<td class=\"label\">" . $artist["label"] . "</td>");
+		print("<td class=\"count\">" . $artist["count"] . "</td>");
 		print("</tr>\n");
 	}
 ?>
@@ -62,8 +62,8 @@ if (isset($_GET['user'])) {
 <?
 	foreach ($graphs->get_songs() as $topsong) {
 		print("<tr>");
-		print("<td>" . $topsong["label"] . "</td>");
-		print("<td>" . $topsong["count"] . "</td>");
+		print("<td class=\"label\">" . $topsong["label"] . "</td>");
+		print("<td class=\"count\">" . $topsong["count"] . "</td>");
 		print("</tr>\n");
 	}
 ?>
