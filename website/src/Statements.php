@@ -19,7 +19,7 @@ class Statements {
 	const _USER_ID = "SELECT u.id FROM users u WHERE user = ?";
 	const _USER_ID_TYPE = "s";
 	const _GET_USERS = "SELECT u.user FROM users u ORDER BY u.user ASC";
-	const _TOP_SONGS = "SELECT COUNT(s.id) AS count, s.title FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? GROUP BY p.songid ORDER BY count DESC LIMIT ?";
+	const _TOP_SONGS = "SELECT COUNT(s.id) AS count, CONCAT(s.artist, ' - ', s.title) FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? GROUP BY p.songid ORDER BY count DESC LIMIT ?";
 	const _TOP_SONGS_TYPE = "ii";
 	const _TOP_ARTISTS = "SELECT COUNT(s.id) AS count, s.artist FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? GROUP BY s.artist ORDER BY count DESC LIMIT ?";
 	const _TOP_ARTISTS_TYPE = "ii";
