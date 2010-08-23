@@ -2,8 +2,10 @@
 /*
  * User registration page
  */
+
 require_once("src/User.php");
 require_once("src/Template.php");
+require_once("src/util.Query.php");
 
 Template::build_header("Registration");
 
@@ -11,7 +13,7 @@ if (isset($_POST['user']) && isset($_POST['email']) && isset($_POST['password'])
 	if ($_POST['password'] != $_POST['password_confirm']) {
 		print("Passwords do not match!");
 	} else {
-		if (User::add_user($_POST['user'], $_POST['email'], $_POST['password'])) {
+		if (Query::add_user($_POST['user'], $_POST['email'], $_POST['password'])) {
 			print("Registration successful.");
 		} else {
 			print("Registration failed. Username or e-mail already in use!");
