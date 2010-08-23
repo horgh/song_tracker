@@ -1,15 +1,9 @@
 <?
 /*
- * Taken from MyQuote
+ * Taken from MyQuote, written by me!
  */
 
 class DateFormat {
-	public static function format($timeStamp) {
-		//2007-04-11 23:37:39
-
-		return date("F d, Y", strtotime($timeStamp));
-	}
-
 	/*
 	 * Take date formatted like 2010-02-07 22:09:18
 	 * and return x seconds ago, or x hours ago, etc
@@ -51,6 +45,5 @@ class DateFormat {
 		else
 			return $diff . " weeks ago";
 	}
-
 }
 ?>

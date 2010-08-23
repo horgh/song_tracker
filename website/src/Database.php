@@ -31,15 +31,15 @@ class Database {
 		$this->statement = $this->mysqli->stmt_init();
 	}
 
+	function __destruct() {
+		$this->mysqli->close();
+	}
+
 	public static function instance() {
 		if (!isset(self::$instance)) {
 			self::$instance = new self();
 		}
 		return self::$instance;
-	}
-
-	function __destruct() {
-		$this->mysqli->close();
 	}
 
 	public function get_statement() {

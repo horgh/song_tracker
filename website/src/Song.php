@@ -7,7 +7,8 @@ class Song {
 		$artist,
 		$album,
 		$title,
-		$length;
+		$length,
+		$time_since;
 
 	function __construct($id, $date, $artist, $album, $title, $length) {
 		$this->id = $id;
@@ -16,8 +17,10 @@ class Song {
 		$this->album = $album;
 		$this->title = $title;
 		$this->length = $length;
+		$this->time_since = DateFormat::timeSince($this->date);
 	}
 
+	// Not used
 	public function to_html() {
 		$song = '<div class="song">';
 		$song .= '<span class="id">' . $this->id . '</span>';
@@ -39,7 +42,7 @@ class Song {
 	}
 
 	public function get_since() {
-		return DateFormat::timeSince($this->date);
+		return $this->time_since;
 	}
 
 	public function get_artist() {
