@@ -1,10 +1,13 @@
 <?
 /*
  * Database code similar to some of that in MyQuote by fedex
+ *
+ * Must set the $DB_ vars below
  */
 
 require_once("User.php");
 require_once("Song.php");
+require_once("Statements.php");
 
 class Database {
 	private static $DB_HOST = "localhost";
@@ -15,22 +18,6 @@ class Database {
 	private static $instance;
 	private $mysqli;
 	private $statement;
-
-	private static $_INSERT_SONG = "INSERT INTO songs (artist, album, title, length) VALUES(?, ?, ?, ?)";
-	private static $_INSERT_SONG_TYPE = "ssss";
-	private static $_LAST_PLAYS = "SELECT p.id, p.date, s.artist, s.album, s.title, s.length FROM plays p, songs s WHERE p.songid = s.id AND p.userid = ? ORDER BY p.id DESC LIMIT ?";
-	private static $_LAST_PLAYS_TYPE = "ii";
-	private static $_GET_SONGID = "SELECT s.id FROM songs s WHERE title = ? AND artist = ? AND album = ?";
-	private static $_GET_SONGID_TYPE = "sss";
-	private static $_INSERT_PLAY = "INSERT INTO plays (songid, userid) VALUES(?, ?)";
-	private static $_INSERT_PLAY_TYPE = "ii";
-
-	public static function instance() {
-		if (!isset(self::$instance)) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
 
 	function __construct() {
 		$this->mysqli = new mysqli(self::$DB_HOST, self::$DB_LOGIN, self::$DB_PASS, self::$DB_DB);
@@ -44,6 +31,13 @@ class Database {
 		$this->statement = $this->mysqli->stmt_init();
 	}
 
+	public static function instance() {
+		if (!isset(self::$instance)) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
 	function __destruct() {
 		$this->mysqli->close();
 	}
@@ -55,13 +49,13 @@ class Database {
 	// return id of song matching given data
 	private function add_song($artist, $album, $title, $length) {
 		// first attempt to insert new row for song
-		$this->statement->prepare(self::$_INSERT_SONG);
-		$this->statement->bind_param(self::$_INSERT_SONG_TYPE, $artist, $album, $title, $length);
+		$this->statement->prepare(Statements::_INSERT_SONG);
+		$this->statement->bind_param(Statements::_INSERT_SONG_TYPE, $artist, $album, $title, $length);
 
 		// if insertion failed, need to fetch already existing row id
 		if (!$this->statement->execute()) {
-			$this->statement->prepare(self::$_GET_SONGID);
-			$this->statement->bind_param(self::$_GET_SONGID_TYPE, $title, $artist, $album);
+			$this->statement->prepare(Statements::_GET_SONGID);
+			$this->statement->bind_param(Statements::_GET_SONGID_TYPE, $title, $artist, $album);
 			$this->statement->execute();
 			$this->statement->store_result();
 
@@ -95,14 +89,14 @@ class Database {
 			return false;
 		}
 
-		$this->statement->prepare(self::$_INSERT_PLAY);
-		$this->statement->bind_param(self::$_INSERT_PLAY_TYPE, $songid, $user->get_id());
+		$this->statement->prepare(Statements::_INSERT_PLAY);
+		$this->statement->bind_param(Statements::_INSERT_PLAY_TYPE, $songid, $user->get_id());
 		return $this->statement->execute();
 	}
 
 	public function get_songs($user, $count) {
-		$this->statement->prepare(self::$_LAST_PLAYS);
-		$this->statement->bind_param(self::$_LAST_PLAYS_TYPE, $user, $count);
+		$this->statement->prepare(Statements::_LAST_PLAYS);
+		$this->statement->bind_param(Statements::_LAST_PLAYS_TYPE, $user, $count);
 		$this->statement->execute();
 		$this->statement->bind_result($id, $date, $artist, $album, $title, $length);
 		$songs = array();

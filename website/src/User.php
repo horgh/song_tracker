@@ -1,19 +1,13 @@
 <?
 require_once("include/phpass/PasswordHash.php");
 require_once("Database.php");
+require_once("Statements.php");
 
 class User {
 	private $username;
 	private $password;
 	private $id;
 	private $valid = false;
-
-	private static $_USER_DATA = "SELECT u.id, u.pass FROM users u WHERE user = ?";
-	private static $_USER_DATA_TYPE = "s";
-	private static $_USER_ID = "SELECT u.id FROM users u WHERE user = ?";
-	private static $_USER_ID_TYPE = "s";
-	private static $_INSERT_USER = "INSERT INTO users (user, pass, email) VALUES(?, ?, ?)";
-	private static $_INSERT_USER_TYPE = "sss";
 
 	function __construct($username, $password) {
 		$this->username = $username;
@@ -36,8 +30,8 @@ class User {
 		$hash = $hasher->HashPassword($password);
 
 		$stmt = Database::instance()->get_statement();
-		$stmt->prepare(self::$_INSERT_USER);
-		$stmt->bind_param(self::$_INSERT_USER_TYPE, $user, $hash, $email);
+		$stmt->prepare(Statements::_INSERT_USER);
+		$stmt->bind_param(Statements::_INSERT_USER_TYPE, $user, $hash, $email);
 		return $stmt->execute();
 	}
 
@@ -45,8 +39,8 @@ class User {
 	// -1 if not found
 	public static function get_id_by_name($user) {
 		$stmt = Database::instance()->get_statement();
-		$stmt->prepare(self::$_USER_ID);
-		$stmt->bind_param(self::$_USER_ID_TYPE, $user);
+		$stmt->prepare(Statements::_USER_ID);
+		$stmt->bind_param(Statements::_USER_ID_TYPE, $user);
 		$stmt->execute();
 		$stmt->store_result();
 		if ($stmt->num_rows != 1) {
@@ -62,8 +56,8 @@ class User {
 		$hasher = new PasswordHash(12, FALSE);
 
 		$stmt = Database::instance()->get_statement();
-		$stmt->prepare(self::$_USER_DATA);
-		$stmt->bind_param(self::$_USER_DATA_TYPE, $this->username);
+		$stmt->prepare(Statements::_USER_DATA);
+		$stmt->bind_param(Statements::_USER_DATA_TYPE, $this->username);
 		$stmt->execute();
 		$stmt->store_result();
 
