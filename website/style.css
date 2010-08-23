@@ -2,10 +2,29 @@
 	width: 100%;
 }
 
-#just_played th {
+#top_artists {
+	width: 40%;
+	float: left;
+	margin-left: 5%;
+}
+
+#top_songs {
+	width: 50%;
+	float: right;
+	margin-right: 5%;
+}
+
+/*
+#top_artists, #top_songs {
+	width: 60%;
+	margin: auto;
+}
+*/
+
+th {
 	border: 1px solid black;
 }
 
-#just_played td {
+td {
 	text-align: center;
 }

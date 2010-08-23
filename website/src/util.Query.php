@@ -8,6 +8,16 @@ require_once("Song.php");
 require_once("User.php");
 
 class Query {
+	public static function user_count_plays($userid) {
+		$stmt = Database::instance()->get_statement();
+		$stmt->prepare(Statements::_PLAYS_USER);
+		$stmt->bind_param(Statements::_PLAYS_USER_TYPE, $userid);
+		$stmt->execute();
+		$stmt->bind_result($count);
+		$stmt->fetch();
+		return $count;
+	}
+
 	// boolean whether succeed
 	public static function add_play($user, $artist, $album, $title, $length) {
 		$album = stripslashes($album);
