@@ -16,3 +16,15 @@ Setup:
  4. Place website/ directory in a webserver accesible location.
  5. Visit http://your.website/music/register.php to register.
  6. Begin updating to api.php!
+
+URLs:
+ By default, visiting a user page is
+ http://your.website/music/index.php?user=username
+ With URL rewriting you can have a URL such as
+ http://your.website/music/username
+ A rule to accomplish this in lighttpd is as follows:
+  url.rewrite-once = (
+    	"^/music/([a-zA-Z]+)$" => "/music/index.php?user=$1"
+  )
+ Note: the mod_rewrite module must be loaded.
+ A similar rule can be used with other webservers.
