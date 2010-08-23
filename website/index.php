@@ -27,17 +27,17 @@ if (isset($_GET['user'])) {
 <th>Length</th>
 <th>Played</th>
 <?
-	$songs = Query::get_songs($userid, 20);
+		$songs = Query::get_songs($userid, 20);
 
-	foreach ($songs as $song) {
-		print("<tr>");
-		print("<td>" . $song->get_artist() . "</td>");
-		print("<td>" . $song->get_album() . "</td>");
-		print("<td>" . $song->get_title() . "</td>");
-		print("<td>" . $song->get_length() . "</td>");
-		print("<td>" . $song->get_since() . "</td>");
-		print("</tr>\n");
-	}
+		foreach ($songs as $song) {
+			print("<tr>");
+			print("<td>" . $song->get_artist() . "</td>");
+			print("<td>" . $song->get_album() . "</td>");
+			print("<td>" . $song->get_title() . "</td>");
+			print("<td>" . $song->get_length() . "</td>");
+			print("<td>" . $song->get_since() . "</td>");
+			print("</tr>\n");
+		}
 ?>
 </table>
 <?

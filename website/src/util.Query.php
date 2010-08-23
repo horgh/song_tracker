@@ -9,7 +9,7 @@ require_once("User.php");
 
 class Query {
 	// boolean whether succeed
-	public function add_play($user, $artist, $album, $title, $length) {
+	public static function add_play($user, $artist, $album, $title, $length) {
 		$album = stripslashes($album);
 		$artist = stripslashes($artist);
 		$title = stripslashes($title);
@@ -24,22 +24,21 @@ class Query {
 			return false;
 		}
 
-		$songid = self::add_song($artist, $album, $title, $length);
+		$songid = self::insert_song($artist, $album, $title, $length);
 		if ($songid == -1) {
 			return false;
 		}
 
+		$stmt = Database::instance()->get_statement();
 		$stmt->prepare(Statements::_INSERT_PLAY);
 		$stmt->bind_param(Statements::_INSERT_PLAY_TYPE, $songid, $user->get_id());
-		$success = $stmt->execute();
-		$stmt->close();
-		return $success;
+		return $stmt->execute();
 	}
 
 	// return song id, or -1 if not found
 	// used by insert_song()
-	private function get_song_by_names($title, $artist, $album) {
-		$stmt = Database::instance->get_statement();
+	private static function get_song_by_names($title, $artist, $album) {
+		$stmt = Database::instance()->get_statement();
 
 		$stmt->prepare(Statements::_GET_SONGID);
 		$stmt->bind_param(Statements::_GET_SONGID_TYPE, $title, $artist, $album);
@@ -48,37 +47,32 @@ class Query {
 
 		// if somehow failed to find, indicate with -1
 		if ($stmt->num_rows != 1) {
-			$stmt->close();
 			return -1;
 		}
 
 		$stmt->bind_result($id);
 		$stmt->fetch();
-		$stmt->close();
 		return $id;
 	}
 
 	// returns id of song matching given data
 	// used by add_play()
-	private function insert_song($artist, $album, $title, $length) {
-		$stmt = Database::instance->get_statement();
+	private static function insert_song($artist, $album, $title, $length) {
+		$stmt = Database::instance()->get_statement();
 		// first attempt to insert new row for song
 		$stmt->prepare(Statements::_INSERT_SONG);
 		$stmt->bind_param(Statements::_INSERT_SONG_TYPE, $artist, $album, $title, $length);
 
 		// if insertion failed, need to fetch already existing row id
 		if (!$stmt->execute()) {
-			$stmt->close();
 			return self::get_song_by_names($title, $artist, $album);
 		}
-		$id = $stmt->insert_id;
-		$stmt->close();
-		return $id;
+		return $stmt->insert_id;
 	}
 
 	// True if last played song is identical to given song's data
 	// used by add_play()
-	private function repeat($user, $artist, $album, $title, $length) {
+	private static function repeat($user, $artist, $album, $title, $length) {
 		$last = self::get_songs($user, 1);
 		// No plays yet: no repeat
 		if (count($last) == 0) {
@@ -90,7 +84,7 @@ class Query {
 
 	// Length given in form mm:ss or milliseconds, return in form of mm:ss
 	// used by add_play()
-	private function fix_length($length) {
+	private static function fix_length($length) {
 		// If no ":" found, assume time given in milliseconds
 		if (strpos($length, ":") === false) {
 			$length = $length / 1000;
@@ -102,7 +96,8 @@ class Query {
 	}
 
 	// returns array of $count songs for $user
-	public function get_songs($user, $count) {
+	public static function get_songs($user, $count) {
+		$stmt = Database::instance()->get_statement();
 		$stmt->prepare(Statements::_LAST_PLAYS);
 		$stmt->bind_param(Statements::_LAST_PLAYS_TYPE, $user, $count);
 		$stmt->execute();
@@ -111,7 +106,6 @@ class Query {
 		while ($stmt->fetch()) {
 			$songs[] = new Song($id, $date, $artist, $album, $title, $length);
 		}
-		$stmt->close();
 		return $songs;
 	}
 
@@ -123,9 +117,7 @@ class Query {
 		$stmt = Database::instance()->get_statement();
 		$stmt->prepare(Statements::_INSERT_USER);
 		$stmt->bind_param(Statements::_INSERT_USER_TYPE, $user, $hash, $email);
-		$success = $stmt->execute();
-		$stmt->close();
-		return $success;
+		return $stmt->execute();
 	}
 
 	// get userid by name. -1 if not found
@@ -140,7 +132,6 @@ class Query {
 		}
 		$stmt->bind_result($id);
 		$stmt->fetch();
-		$stmt->close();
 		return $id;
 	}
 }
