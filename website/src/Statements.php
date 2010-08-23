@@ -10,7 +10,7 @@ class Statements {
 	const _INSERT_USER_TYPE = "sss";
 	const _INSERT_PLAY = "INSERT INTO plays (songid, userid) VALUES(?, ?)";
 	const _INSERT_PLAY_TYPE = "ii";
-	const _LAST_PLAYS = "SELECT p.id, p.date, s.artist, s.album, s.title, s.length FROM plays p, songs s WHERE p.songid = s.id AND p.userid = ? ORDER BY p.id DESC LIMIT ?";
+	const _LAST_PLAYS = "SELECT p.id, p.date, s.artist, s.album, s.title, s.length FROM plays p, songs s WHERE p.songid = s.id AND p.userid = ? ORDER BY p.date DESC LIMIT ?";
 	const _LAST_PLAYS_TYPE = "ii";
 	const _GET_SONGID = "SELECT s.id FROM songs s WHERE title = ? AND artist = ? AND album = ?";
 	const _GET_SONGID_TYPE = "sss";

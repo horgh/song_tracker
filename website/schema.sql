@@ -3,7 +3,7 @@ CREATE TABLE songs (
 	title VARCHAR(100) NOT NULL,
 	artist VARCHAR(100) NOT NULL,
 	album VARCHAR(100),
-	length VARCHAR(10) NOT NULL,
+	length VARCHAR(10),
 	PRIMARY KEY (id),
 	CONSTRAINT UNIQUE (title, artist, album)
 );

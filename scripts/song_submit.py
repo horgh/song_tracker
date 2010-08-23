@@ -38,6 +38,7 @@ def send_song_http(song):
 
 if len(sys.argv) != 5:
 	print("Usage: %s <artist> <album> <song> <length>" % sys.argv[0])
+	sys.exit()
 
 params = dict()
 params["artist"] = sys.argv[1]
