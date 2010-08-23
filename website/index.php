@@ -4,13 +4,13 @@
  * by horgh
  *
  * Front-end to song/plays database
- *
  */
 
 require_once("src/Database.php");
 require_once("src/Song.php");
 require_once("src/Template.php");
 require_once("src/util.Query.php");
+require_once("src/Userlist.php");
 
 $db = Database::instance();
 
@@ -50,6 +50,19 @@ if (isset($_GET['user'])) {
 } else {
 	Template::build_header("Welcome");
 	print("Welcome to the song tracker.");
+?>
+<table>
+<th>Username</th>
+<?
+	$userlist = new Userlist();
+	foreach ($userlist->get_userlist() as $user) {
+		print("<tr>");
+		print("<td><a href=\"index.php?user=" . $user . "\">" . $user . "</a></td>");
+		print("</tr");
+	}
 }
+?>
+</table>
+<?
 Template::build_footer();
 ?>

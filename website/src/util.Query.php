@@ -39,7 +39,6 @@ class Query {
 	// used by insert_song()
 	private static function get_song_by_names($title, $artist, $album) {
 		$stmt = Database::instance()->get_statement();
-
 		$stmt->prepare(Statements::_GET_SONGID);
 		$stmt->bind_param(Statements::_GET_SONGID_TYPE, $title, $artist, $album);
 		$stmt->execute();

@@ -18,5 +18,6 @@ class Statements {
 	const _USER_DATA_TYPE = "s";
 	const _USER_ID = "SELECT u.id FROM users u WHERE user = ?";
 	const _USER_ID_TYPE = "s";
+	const _GET_USERS = "SELECT u.user FROM users u ORDER BY u.user ASC";
 }
 ?>
