@@ -25,5 +25,8 @@ class Statements {
 	const _TOP_ARTISTS_TYPE = "ii";
 	const _PLAYS_USER = "SELECT COUNT(p.id) FROM plays p WHERE userid = ?";
 	const _PLAYS_USER_TYPE = "i";
+
+	const _DEBUG_SONG_BY_LENGTH = "SELECT s.id, s.title, s.artist, s.album, s.length FROM songs s WHERE length = ?";
+	const _DEBUG_SONG_BY_LENGTH_TYPE = "s";
 }
 ?>
