@@ -25,6 +25,10 @@ class Query {
 		$title = stripslashes($title);
 		$length = self::fix_length($length);
 
+		if ($title == "" || $artist == "") {
+			return false;
+		}
+
 		// do not add if last song for user is identical
 		if (self::repeat($user->get_id(), $artist, $album, $title, $length)) {
 			return false;
