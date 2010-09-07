@@ -27,7 +27,6 @@ if (isset($_GET['user'])) {
 <th>Artist</th>
 <th>Album</th>
 <th>Title</th>
-<th>Length</th>
 <th>Played</th>
 <?
 		$songs = Query::get_songs($userid, 20);
@@ -36,7 +35,6 @@ if (isset($_GET['user'])) {
 			print("<td>" . $song->get_artist() . "</td>");
 			print("<td>" . $song->get_album() . "</td>");
 			print("<td>" . $song->get_title() . "</td>");
-			print("<td>" . $song->get_length() . "</td>");
 			print("<td>" . $song->get_since() . "</td>");
 			print("</tr>\n");
 		}
