@@ -9,6 +9,8 @@ require_once("src/Song.php");
 require_once("src/User.php");
 require_once("src/util.Query.php");
 
+header ('Content-type: text/html; charset=utf-8');
+
 $db = Database::instance();
 // Update sent
 if (isset($_POST['artist'])
@@ -29,6 +31,7 @@ if (isset($_POST['artist'])
 
 		if(!Query::add_play($user, $_POST['artist'], $_POST['album'], $_POST['title'], $_POST['length'])) {
 			print("Error recording the play.");
+			print("\napi.php: Artist: " . $_POST['artist'] . " album: " . $_POST['album'] . " title: " . $_POST['title'] . " length " . $_POST['length']);
 		}
 	}
 

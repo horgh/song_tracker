@@ -29,11 +29,11 @@ def send_song_http(song):
 	conn = http.client.HTTPConnection(UPDATE_SITE)
 	conn.request("POST", UPDATE_PATH, params, headers)
 	# Debug
-	#print("Params:", params)
-	#response = conn.getresponse()
-	#print("status: " + str(response.status))
-	#print(response.read())
-	#response.reason
+	print("Params:", params)
+	response = conn.getresponse()
+	print("status: " + str(response.status))
+	print(response.read())
+	response.reason
 	conn.close()
 
 if len(sys.argv) != 5:

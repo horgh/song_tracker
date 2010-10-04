@@ -20,9 +20,10 @@ class Query {
 
 	// boolean whether succeed
 	public static function add_play($user, $artist, $album, $title, $length) {
-		$album = stripslashes($album);
-		$artist = stripslashes($artist);
-		$title = stripslashes($title);
+		// XXX why stripslashes?
+		//$album = stripslashes($album);
+		//$artist = stripslashes($artist);
+		//$title = stripslashes($title);
 		$length = self::fix_length($length);
 
 		if ($title == "" || $artist == "") {

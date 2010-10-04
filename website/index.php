@@ -13,6 +13,8 @@ require_once("src/util.Query.php");
 require_once("src/Userlist.php");
 require_once("src/Graphs.php");
 
+header('Content-type: text/html; charset=utf-8');
+
 $db = Database::instance();
 
 if (isset($_GET['user'])) {

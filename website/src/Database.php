@@ -21,10 +21,14 @@ class Database {
 			print("MySQL connection error!");
 			exit();
 		}
+		/*
+		XXX this doesn't work
 		if (!$this->mysqli->set_charset("utf8")) {
 			printf("Error setting charset utf8: %s\n", $this->mysqli->error);
 		}
+		*/
 		$this->statement = $this->mysqli->stmt_init();
+		//$this->force_utf8();
 	}
 
 	function __destruct() {
@@ -40,6 +44,12 @@ class Database {
 
 	public function get_statement() {
 		return $this->statement;
+	}
+
+	// XXX unneeded
+	public function force_utf8() {
+		$this->statement->prepare("SET NAMES utf8");
+		$this->statement->execute();
 	}
 }
 ?>
