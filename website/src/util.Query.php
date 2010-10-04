@@ -26,7 +26,8 @@ class Query {
 		//$title = stripslashes($title);
 		$length = self::fix_length($length);
 
-		if ($title == "" || $artist == "") {
+		// artist may be "" though
+		if ($title == "") {
 			return false;
 		}
 
