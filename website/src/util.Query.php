@@ -26,7 +26,15 @@ class Query {
 		//$title = stripslashes($title);
 		$length = self::fix_length($length);
 
-		// artist may be "" though
+		// unknown artist/album ("") becomes "N/A"
+		if ($artist == "") {
+			$artist = "N/A";
+		}
+		if ($album == "") {
+			$album = "N/A";
+		}
+
+		// do not allow blank title
 		if ($title == "") {
 			return false;
 		}

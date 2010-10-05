@@ -21,7 +21,7 @@ class Statements {
 	const _GET_USERS = "SELECT u.user FROM users u ORDER BY u.user ASC";
 	const _TOP_SONGS = "SELECT COUNT(s.id) AS count, CONCAT(s.artist, ' - ', s.title) FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? GROUP BY p.songid ORDER BY count DESC LIMIT ?";
 	const _TOP_SONGS_TYPE = "ii";
-	const _TOP_ARTISTS = "SELECT COUNT(s.id) AS count, s.artist FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? AND s.artist != '' GROUP BY s.artist ORDER BY count DESC LIMIT ?";
+	const _TOP_ARTISTS = "SELECT COUNT(s.id) AS count, s.artist FROM plays p JOIN songs s ON p.songid = s.id WHERE p.userid = ? AND s.artist != 'N/A' GROUP BY s.artist ORDER BY count DESC LIMIT ?";
 	const _TOP_ARTISTS_TYPE = "ii";
 	const _PLAYS_USER = "SELECT COUNT(p.id) FROM plays p WHERE userid = ?";
 	const _PLAYS_USER_TYPE = "i";
