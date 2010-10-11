@@ -111,7 +111,7 @@ class Query {
 		// If no ":" found, assume time given in milliseconds
 		if (strpos($length, ":") === false) {
 			$length = $length / 1000;
-			$minutes = round($length / 60, 0, PHP_ROUND_HALF_DOWN);
+			$minutes = floor($length / 60);
 			$seconds = $length % 60;
 			$length = sprintf("%02d:%02d", $minutes, $seconds);
 		}
