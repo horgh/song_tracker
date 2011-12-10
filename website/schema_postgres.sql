@@ -1,3 +1,5 @@
+-- Postgresql schema
+
 -- Each song that played will have one entry here
 CREATE TABLE songs (
   id SERIAL,
