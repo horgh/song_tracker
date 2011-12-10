@@ -4,7 +4,7 @@
 */
 
 class Template {
-	public static function build_header($title) {
+  public static function build_header($title) {
 ?>
 <html>
 <head>
@@ -16,13 +16,13 @@ print("<title>" . $title . "</title>\n");
 </head>
 <body>
 <?
-	}
+  }
 
-	public static function build_footer() {
+  public static function build_footer() {
 ?>
 </body>
 </html>
 <?
-	}
+  }
 }
 ?>
