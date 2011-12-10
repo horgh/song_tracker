@@ -8,34 +8,52 @@ require_once("Logger.php");
 
 class Model {
   /*
-   * @param int $id
+   * @param string $field   Database field to select with (WHERE field)
+   * @param string $data    Data to use with the field
    *
    * @return bool Whether successful
    *
    * Fill the object with its data from database
+   * A single row should be found with the field data
+   */
+  public function query_by_field($field, $data) {
+    if (strlen($field) === 0 || strlen($data) === 0) {
+      Logger::log("query_by_field: invalid field or data given");
+      return false;
+    }
+
+    $db = Database::instance();
+    $table_name = strtolower(get_class());
+    $sql = "SELECT * FROM ? WHERE ? = ?";
+    $params = array($table_name, $field, $data);
+    try {
+      $rows = $db->select($sql, $params);
+    } catch (Exception $e) {
+      Logger::log("query_by_field: failed to retrieve from db: " . $e->getMessage());
+      return false;
+    }
+
+    if (count($rows) !== 1) {
+      Logger::log("query_by_field: no row found with that data");
+      return false;
+    }
+    return $this->fill_fields($rows[0]);
+  }
+
+  /*
+   * @param int $id
+   *
+   * @return bool Whether successful
+   *
+   * Fill object with data from database
+   * Use id column
    */
   public function query_by_id($id) {
     if (!is_numeric($id)) {
       Logger::log("query_by_id: invalid id: $id");
       return false;
     }
-
-    $db = Database::instance();
-    $table_name = strtolower(get_class());
-    $sql = "SELECT * FROM ? WHERE id = ?";
-    $params = array($table_name, $id);
-    try {
-      $rows = $db->select($sql, $params);
-    } catch (Exception $e) {
-      Logger::log("query_by_id: failed to retrieve from db: " . $e->getMessage());
-      return false;
-    }
-
-    if (count($rows) !== 1) {
-      Logger::log("query_by_id: no row found with that id");
-      return false;
-    }
-    return $this->fill_fields($rows[0]);
+    return $this->query_by_field("id", $id);
   }
 
   /*
