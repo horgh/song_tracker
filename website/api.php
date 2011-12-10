@@ -4,6 +4,10 @@
  *  - new play: POST: user, pass, artist, album, title, length
  *  - last play: GET: user, last
  */
+
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', 'On');
+
 require_once("src/Song.php");
 require_once("src/User.php");
 require_once("src/util.Query.php");
@@ -31,6 +35,7 @@ if (isset($_POST['artist'])
       print("Error recording the play.");
       print("\napi.php: Artist: " . $_POST['artist'] . " album: " . $_POST['album'] . " title: " . $_POST['title'] . " length " . $_POST['length']);
     }
+    print "play recorded";
   }
 
 // Last song played in plain text for script (for now playing)

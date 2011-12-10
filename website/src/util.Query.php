@@ -84,7 +84,12 @@ class Query {
     $db = Database::instance();
     $sql = "SELECT id FROM songs WHERE title = ? AND artist = ? AND album = ?";
     $params = array($title, $artist, $album);
-    $rows = $db->select($sql, $params);
+    try {
+      $rows = $db->select($sql, $params);
+    } catch (Exception $e) {
+      Logger::log("get_song_by_names: failed to retrieve song: " . $e->getMessage());
+      return -1;
+    }
 
     // if somehow failed to find, indicate with -1
     if (count($rows) !== 1 || !array_key_exists('id', $rows[0])) {
@@ -109,7 +114,9 @@ class Query {
     try {
       $count = $db->manipulate($sql, $params, 1);
     } catch (Exception $e) {
-      Logger::log("insert_song: song already in database? " . $e->getMessage());
+      Logger::log("insert_song: failure inserting song. Is it already in the"
+                . " database? Error: " . $e->getMessage()
+                . " SQL: $sql Params: " . print_r($params, 1));
     }
 
     // Regardless, we need to now get the id of the song from db

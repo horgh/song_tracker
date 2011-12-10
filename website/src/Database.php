@@ -72,7 +72,16 @@ class Database {
    */
   function manipulate($sql, array $params, $expected = NULL) {
     $this->beginTransaction();
-    $sth = $this->query($sql, $params);
+
+    // Since we're in a transaction, wrap this up so we end the
+    // transaction correctly
+    try {
+      $sth = $this->query($sql, $params);
+    } catch (Exception $e) {
+      $this->rollBack();
+      throw new Exception("failure executing query: " . $e->getMessage());
+    }
+
     if ($expected !== NULL) {
       if ($sth->rowCount() != $expected) {
         $this->rollBack();

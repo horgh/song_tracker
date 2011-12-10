@@ -160,3 +160,5 @@ my $dbh_postgres = DBI->connect($dsn_postgres, 'songs', 'songs', { pg_enable_utf
 
 # plays table
 &copy_plays($dbh_mysql, $dbh_postgres);
+
+print "NOTE: you will need to set the serial sequence for each table to be after the last id for each table (or else primary key / unique will be validated when trying to insert new\n";
