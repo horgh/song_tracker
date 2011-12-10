@@ -1,20 +1,14 @@
 <?php
 /*
  * Work with the songs table
- *
- * XXX Unfinished and currently not used
  */
 
 require_once("Database.php");
 require_once("Logger.php");
+require_once("Model.php");
+require_once("util.DateFormat.php");
 
-class SongModel {
-  private $id = NULL;
-  private $title = NULL;
-  private $artist = NULL;
-  private $album = NULL;
-  private $length = NULL;
-
+class Song extends Model {
   private $fields = array(
                           'id',
                           'title',
@@ -24,35 +18,13 @@ class SongModel {
                          );
 
   /*
-   * Throws exception if insufficient data
+   * Overload parent method
    */
-  function __construct(array $row) {
-    $this->fill_fields($row);
-  }
-
-  /*
-   * Throws exception if field not found
-   */
-  private function fill_fields(array $row) {
-    foreach ($fields as $field) {
-      if (!array_key_exists($field, $row)) {
-        throw new Exception("did not find expected field $field");
-      }
-      $this->$field = $row[$field];
+  public function query_by_id($id) {
+    if (!$this->query_by_id($id)) {
+      return false;
     }
-  }
-
-  /*
-   * @return SongModel object
-   *
-   * Throws exception on db error (including if song with id does not exist)
-   */
-  function getById($id) {
-    if (empty($id) || !is_numeric($id)) {
-      throw new Exception("invalid id given: $id");
-    }
-    $dbh = Database::instance();
-    $sql = "SELECT * FROM songs WHERE id = ?";
+    $this->time_since = DateFormat::timeSince($this->create_time);
   }
 }
 ?>
