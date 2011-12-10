@@ -1,17 +1,13 @@
 Requirements:
  - PHP 5.3+
- - MySQL (recent version?)
+ - PostgreSQL (recent version?)
 
 Setup:
  1. Create a database and user.
-  mysql> create database songs;
-	mysql> create user 'songs'@'localhost' identified by 'songs';
-  mysql> grant all on songs.* to 'songs'@'localhost';
 
  2. Set $DB_ variables to match the above in src/Database.php
 
- 3. Import schema.sql to this database.
-  ~$ mysql -u songs -p songs < code/song_tracker/website/schema.sql 
+ 3. Import schema_postgres.sql to this database.
 
  4. Place website/ directory in a webserver accesible location.
  5. Visit http://your.website/music/register.php to register.
