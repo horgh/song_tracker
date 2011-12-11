@@ -182,6 +182,30 @@ sub merge_songs_case_insensitive {
   }
 }
 
+# Currently we store lengths as strings in the form: mm:ss
+# This will convert those types of lengths to seconds
+sub convert_length_format {
+  my ($dbh) = @_;
+  # Get every song that has a length
+  my $sql = "SELECT * FROM songs WHERE length != ?";
+  my @params = ('');
+  my $href = &db_select($dbh, $sql, \@params);
+  foreach my $id (keys %$href) {
+    # Add length in seconds into new length2 column
+    my $length = $href->{$id}->{length};
+    if ($length =~ /(\d+):(\d+)/) {
+      print "Length: $length\n";
+      my $seconds = $1 * 60 + $2;
+      print "In seconds: $seconds\n";
+      $sql = "UPDATE songs SET length2 = ? WHERE id = ?";
+      @params = ($seconds, $id);
+      if (&db_manipulate($dbh, $sql, \@params) != 1) {
+        print "Error updating?! No rows affected! id: $id\n";
+      }
+    }
+  }
+}
+
 binmode STDOUT, ":encoding(utf8)";
 
 my $dsn = "DBI:Pg:dbname=songs;host=beast.lan";
@@ -190,4 +214,5 @@ my $dbh = DBI->connect($dsn, 'songs', 'songs', { pg_enable_utf8 => 1})
 
 #&merge_songs_with_invalid_artists($dbh);
 #&merge_songs_with_no_albums($dbh);
-&merge_songs_case_insensitive($dbh);
+#&merge_songs_case_insensitive($dbh);
+#&convert_length_format($dbh);

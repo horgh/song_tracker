@@ -47,19 +47,22 @@ class Format {
   }
 
   /*
-   * @return string Length in form mm:ss
+   * @return string Length in form: seconds. -1 if error
    *
-   * Length given in form mm:ss or milliseconds, return in form of mm:ss
+   * Length given in form hh:mm:ss or milliseconds, return in form of seconds
+   * (hh: is optional)
    *
    * Used by add_play()
    */
   public static function fix_length($length) {
-    // If no ":" found, assume time given in milliseconds
-    if (strpos($length, ":") === false) {
-      $length = $length / 1000;
-      $minutes = floor($length / 60);
-      $seconds = $length % 60;
-      $length = sprintf("%02d:%02d", $minutes, $seconds);
+    // If ":" found, assume form: mm:ss
+    if (strpos($length, ":") !== false) {
+      if (preg_match('/^(\d+)?:?(\d+):(\d+)$/', $length, $matches) === false) {
+        return -1;
+      }
+      // even if hh did not match, [1] still gets set (to 0)
+      $seconds = $matches[1] * 60 * 60 + $matches[2] * 60 + $matches[3];
+      return $seconds;
     }
     return $length;
   }

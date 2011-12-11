@@ -6,7 +6,7 @@ CREATE TABLE songs (
   title VARCHAR NOT NULL,
   artist VARCHAR NOT NULL,
   album VARCHAR,
-  length VARCHAR,
+  length INTEGER,
   UNIQUE (title, artist, album),
   PRIMARY KEY (id)
 );
