@@ -149,6 +149,39 @@ sub merge_songs_with_no_albums {
   }
 }
 
+# Since until now we have enforced uniqueness while still allowing different
+# character cases of two strings to not be equal, some songs can be merged
+# this way
+sub merge_songs_case_insensitive {
+  my ($dbh) = @_;
+  # First get every song
+  my $sql = "SELECT * FROM songs";
+  my $href = &db_select($dbh, $sql, []);
+  foreach my $id (keys %$href) {
+    # For every song, see if there is an identical one if we lowercase
+    # all fields
+    $sql = "SELECT * FROM songs"
+         . " WHERE id != ?"
+         . " AND lower(title) = lower(?)"
+         . " AND lower(artist) = lower(?)"
+         . " AND lower(album) = lower(?)";
+    my @params = (
+                  $id,
+                  $href->{$id}->{title},
+                  $href->{$id}->{artist},
+                  $href->{$id}->{album},
+                 );
+    my $href2 = &db_select($dbh, $sql, \@params);
+    foreach my $id2 (keys %$href2) {
+      print "Found possible match:\n";
+      &print_song_record($href->{$id});
+      print " === \n";
+      &print_song_record($href2->{$id2});
+      print "\n\n";
+    }
+  }
+}
+
 binmode STDOUT, ":encoding(utf8)";
 
 my $dsn = "DBI:Pg:dbname=songs;host=beast.lan";
@@ -156,4 +189,5 @@ my $dbh = DBI->connect($dsn, 'songs', 'songs', { pg_enable_utf8 => 1})
   or die;
 
 #&merge_songs_with_invalid_artists($dbh);
-&merge_songs_with_no_albums($dbh);
+#&merge_songs_with_no_albums($dbh);
+&merge_songs_case_insensitive($dbh);

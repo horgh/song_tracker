@@ -37,7 +37,7 @@ class Song extends Model {
     }
 
     // Regardless, we need to now get the id of the song from db
-    return self::get_song_by_names($title, $artist, $album);
+    return self::get_song_id_by_names($title, $artist, $album);
   }
 
   /*
@@ -45,20 +45,23 @@ class Song extends Model {
    *
    * Used by insert_song()
    */
-  public static function get_song_by_names($title, $artist, $album) {
+  public static function get_song_id_by_names($title, $artist, $album) {
     $db = Database::instance();
-    $sql = "SELECT id FROM songs WHERE title = ? AND artist = ? AND album = ?";
+    $sql = "SELECT id FROM songs"
+         . " WHERE LOWER(title) = LOWER(?)"
+         . "  AND LOWER(artist) = LOWER(?)"
+         . "  AND LOWER(album) = LOWER(?)";
     $params = array($title, $artist, $album);
     try {
       $rows = $db->select($sql, $params);
     } catch (Exception $e) {
-      Logger::log("get_song_by_names: failed to retrieve song: " . $e->getMessage());
+      Logger::log("get_song_id_by_names: failed to retrieve song: " . $e->getMessage());
       return -1;
     }
 
     // if somehow failed to find, indicate with -1
     if (count($rows) !== 1 || !array_key_exists('id', $rows[0])) {
-      Logger::log("get_song_by_names: failed to find song");
+      Logger::log("get_song_id_by_names: failed to find song");
       return -1;
     }
     return $rows[0]['id'];
