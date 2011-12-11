@@ -10,7 +10,6 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 'On');
 
 require_once("src/Template.php");
-require_once("src/util.Query.php");
 require_once("src/model.Song.php");
 require_once("src/model.User.php");
 require_once("src/Graphs.php");
@@ -18,26 +17,26 @@ require_once("src/Graphs.php");
 header('Content-type: text/html; charset=utf-8');
 
 if (isset($_GET['user'])) {
-  $user_id = Query::get_id_by_name($_GET['user']);
-  if ($user_id != -1) {
-    Template::build_header($_GET['user'] . "'s music");
-    print("<h1>" . $_GET['user'] . "'s music</h1>\n");
-    $total_plays = Query::user_count_plays($user_id);
-    print("<h3>Total plays: " . $total_plays . "</h3>\n");
+  $user = new User();
+  if ($user->query_by_name($_GET['user'])) {
+    Template::build_header($user->name . "'s music");
+    print("<h1>" . $user->name . "'s music</h1>\n");
+    print("<h3>Total plays: " . $user->get_play_count() . "</h3>\n");
 ?>
+
 <table id="just_played">
 <th>Artist</th>
 <th>Album</th>
 <th>Title</th>
 <th>Played</th>
 <?
-    $songs = Query::get_songs($user_id, 20);
+    $songs = $user->get_latest_songs(20);
     foreach ($songs as $song) {
       print("<tr>");
-      print("<td>" . $song->get_artist() . "</td>");
-      print("<td>" . $song->get_album() . "</td>");
-      print("<td>" . $song->get_title() . "</td>");
-      print("<td>" . $song->get_since() . "</td>");
+      print("<td>" . $song->artist . "</td>");
+      print("<td>" . $song->album . "</td>");
+      print("<td>" . $song->title . "</td>");
+      print("<td>" . $song->play->time_since . "</td>");
       print("</tr>\n");
     }
 ?>
@@ -47,7 +46,7 @@ if (isset($_GET['user'])) {
 <th>Top Artists</th>
 <th>Plays</th>
 <?
-  $graphs = new Graphs($user_id, 10);
+  $graphs = new Graphs($user->id, 10);
   foreach ($graphs->get_artists() as $artist) {
     print("<tr>");
     print("<td class=\"label\">" . $artist["label"] . "</td>");
@@ -82,10 +81,10 @@ if (isset($_GET['user'])) {
 <table>
 <th>Username</th>
 <?
-  $users_names = User::get_users_names();
-  foreach ($users_names as $user) {
+  $users = User::get_all();
+  foreach ($users as $user) {
     print("<tr>");
-    print("<td><a href=\"index.php?user=" . $user . "\">" . $user . "</a></td>");
+    print("<td><a href=\"index.php?user=" . $user->name . "\">" . $user->name . "</a></td>");
     print("</tr");
   }
 }

@@ -7,6 +7,7 @@ require_once("include/phpass/PasswordHash.php");
 require_once("Database.php");
 require_once("Logger.php");
 require_once("Model.php");
+require_once("model.Play.php");
 
 class User extends Model {
   protected $fields = array(
@@ -16,6 +17,19 @@ class User extends Model {
                           'email',
                           'create_time',
                          );
+
+  /*
+   * @param string $name   Name of user to find
+   *
+   * @return bool whether successful
+   */
+  public function query_by_name($name) {
+    if (strlen($name) === 0) {
+      Logger::log("query_by_name: invalid name");
+      return false;
+    }
+    return $this->query_by_field('name', $name);
+  }
 
   /*
    * @return bool Whether successful
@@ -42,9 +56,9 @@ class User extends Model {
    *
    * @return bool Whether user authenticates successfully
    */
-  public function authenticate($name, $password) {
+  public function authenticate($name = "", $password = "") {
     // Object may already have data from database
-    if (!isset($this->id) || !$this->query_by_field('name', $name)) {
+    if (!isset($this->id) && !$this->query_by_field('name', $name)) {
       Logger::log("authenticate: failed to find user record");
       return false;
     }
@@ -74,6 +88,44 @@ class User extends Model {
       $userlist[] = $row['name'];
     }
     return $userlist;
+  }
+
+  /*
+   * @return bool   Whether object has been initialised with the data
+   *                of a user
+   */
+  private function initialised() {
+    return isset($this->id);
+  }
+
+  /*
+   * @return int Number of plays total, or -1 if failure
+   */
+  public function get_play_count() {
+    if (!$this->initialised()) {
+      Logger::log("get_play_count: user not initialised");
+      return -1;
+    }
+    return Play::user_play_count($this);
+  }
+
+  /*
+   * @param int $count
+   *
+   * @return array of latest played songs
+   *
+   * Get the $count latest songs played by this user
+   */
+  public function get_latest_songs($count) {
+    if (!is_numeric($count)) {
+      Logger::log("get_latest_songs: invalid count value");
+      return array();
+    }
+    if (!$this->initialised()) {
+      Logger::log("get_latest_songs: user not initialised");
+      return array();
+    }
+    return Song::get_users_latest_songs($this, $count);
   }
 }
 ?>

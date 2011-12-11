@@ -18,6 +18,9 @@ class Graphs {
    * @return bool  Whether successful
    */
   function __construct($user_id, $count) {
+    $this->user_id = $user_id;
+    $this->count = $count;
+
     $sql_artists = "SELECT COUNT(s.id) AS count, s.artist AS label"
                  . " FROM plays p JOIN songs s ON p.song_id = s.id"
                  . " WHERE p.user_id = ? AND s.artist != 'N/A'"

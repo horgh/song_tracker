@@ -12,21 +12,22 @@ class Model {
    *
    * @return string Given string pluralized
    */
-  private function pluralize($str) {
+  private static function pluralize($str) {
     return $str . 's';
   }
 
   /*
    * @return string Name of the table associated with the model
    */
-  private function get_table_name() {
+  private static function get_table_name() {
     // get_called_class() gets name of actual object's class.
     // get_class() would always return this class's name even if
     // the object is actually a child class
     $table_name = strtolower(get_called_class());
-    $table_name = $this->pluralize($table_name);
+    $table_name = self::pluralize($table_name);
     return $table_name;
   }
+
   /*
    * @param string $field   Database field to select with (WHERE field)
    * @param string $data    Data to use with the field
@@ -43,9 +44,9 @@ class Model {
     }
 
     $db = Database::instance();
-    $table_name = $this->get_table_name();
-    $sql = "SELECT * FROM ? WHERE ? = ?";
-    $params = array($table_name, $field, $data);
+    $sql = "SELECT * FROM " . self::get_table_name()
+         . " WHERE $field = ?";
+    $params = array($data);
     try {
       $rows = $db->select($sql, $params);
     } catch (Exception $e) {
@@ -79,20 +80,21 @@ class Model {
   /*
    * @return array of objects of the model's type
    */
-  private function get_all() {
+  public static function get_all() {
     $db = Database::instance();
-    $table_name = $this->get_table_name();
-    $sql = "SELECT * FROM ?";
-    $params = array($table_name);
+    $sql = "SELECT * FROM " . self::get_table_name();
+    $params = array();
     try {
       $rows = $db->select($sql, $params);
     } catch (Exception $e) {
       Logger::log("get_all: retrieval from database failure: " . $e->getMessage());
       return array();
     }
+
+    $object_class = get_called_class();
     $objects = array();
     foreach ($rows as $row) {
-      $obj = new self();
+      $obj = new $object_class();
       if (!$obj->fill_fields($row)) {
         Logger::log("get_all: failure building a model object");
         return array();
@@ -108,7 +110,7 @@ class Model {
    *
    * @return bool Whether successful
    */
-  private function fill_fields(array $row) {
+  public function fill_fields(array $row) {
     if (!is_array($this->fields)) {
       Logger::log("fill_fields: Error: fields array is not set!");
       return false;
@@ -149,7 +151,7 @@ class Model {
    */
   private function update() {
     // Build SQL statement
-    $sql = "UPDATE " . $this->get_table_name()
+    $sql = "UPDATE " . self::get_table_name()
          . " SET ";
 
     $field_names = $this->get_field_names();
@@ -267,7 +269,7 @@ class Model {
     // Build statement
     // Note that we do not bind the table name nor the field names as
     // this seems to not be possible?
-    $sql = "INSERT INTO " . $this->get_table_name()
+    $sql = "INSERT INTO " . self::get_table_name()
          . ' ' . $this->get_field_names()
          . " VALUES " . $this->get_bind_fields();
 
