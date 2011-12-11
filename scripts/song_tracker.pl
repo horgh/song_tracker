@@ -13,6 +13,9 @@
 use strict;
 use warnings;
 
+# for ceil/floor
+use POSIX ();
+
 use LWP::Simple;
 
 use vars qw($VERSION %IRSSI);
@@ -32,15 +35,32 @@ $VERSION = "0.1";
 my $username = "cd";
 my $url = "http://leviathan.summercat.com/~a/music/api.php?last=1&user=$username";
 
+# Take a length in milliseconds and return in a nicer format:
+# mm:ss
+sub format_length {
+	my ($ms) = @_;
+	my $seconds_total = POSIX::ceil($ms / 1000);
+	my $mins = POSIX::floor($seconds_total / 60);
+	my $seconds = $seconds_total % 60;
+	return "$mins:$seconds";
+}
+
 sub get_song {
 	my $result = get($url);
 	die "Could not fetch song" unless defined $result;
+	# Response should have length given at the end in form: (ms)
+	Irssi::print("here1");
+	if ($result =~ /\((\d+)\)$/) {
+		Irssi::print("ytes");
+		my $length = &format_length($1);
+		$result =~ s/\((\d+\))$/($length)/;
+	}
 	return $result;
 }
 
 sub cmd_np {
 	my ($data, $server, $witem) = @_;
-	my $track = get_song();
+	my $track = &get_song();
 	if ($witem) {
 		$witem->command("say np: $track");
 	}
