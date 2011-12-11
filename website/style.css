@@ -2,28 +2,19 @@
   width: 100%;
 }
 
-#top_artists {
-  width: 40%;
-  float: left;
-  margin-left: 5%;
-}
-
-#top_songs {
+.table_left {
+  display: inline-table;
   width: 50%;
-  float: right;
-  margin-right: 5%;
 }
 
-#top_songs .label {
+.table_right {
+  display: inline-table;
+  width: 50%;
+}
+
+.table_right .label {
   text-align: left;
 }
-
-/*
-#top_artists, #top_songs {
-  width: 60%;
-  margin: auto;
-}
-*/
 
 th {
   border: 1px solid black;

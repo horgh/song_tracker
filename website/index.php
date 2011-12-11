@@ -16,6 +16,33 @@ require_once("src/Graphs.php");
 
 header('Content-type: text/html; charset=utf-8');
 
+/*
+ * @param array $graph_array   An array from Graphs
+ * @param string $class        CSS class to use for the table
+ * @param string $title        Table title
+ *
+ * @return void
+ *
+ * SIDE EFFECT: Prints to stdout
+ */
+function renderTopTable(array $graph_array, $class, $title) {
+  print '<table class="' . $class . '">';
+  print '<th>' . $title . '</th>';
+  print '<th>Plays</th>';
+
+  foreach ($graph_array as $item) {
+    print "<tr>";
+      print '<td class="label">' . $item['label'] . '</td>';
+      print '<td class="label">' . $item['count'] . '</td>';
+    print "</tr>";
+  }
+  print '</table>';
+}
+
+/*
+ * Begin
+ */
+
 if (isset($_GET['user'])) {
   $user = new User();
   if ($user->query_by_name($_GET['user'])) {
@@ -41,33 +68,40 @@ if (isset($_GET['user'])) {
     }
 ?>
 </table>
-<br>
-<table id="top_artists">
-<th>Top Artists</th>
-<th>Plays</th>
-<?
+
+<br />
+
+<?php
   $graphs = new Graphs($user->id, 10);
-  foreach ($graphs->get_artists() as $artist) {
-    print("<tr>");
-    print("<td class=\"label\">" . $artist["label"] . "</td>");
-    print("<td class=\"count\">" . $artist["count"] . "</td>");
-    print("</tr>\n");
-  }
-?>
-</table>
-<table id="top_songs">
-<th>Top Songs</th>
-<th>Plays</th>
-<?
-  foreach ($graphs->get_songs() as $topsong) {
-    print("<tr>");
-    print("<td class=\"label\">" . $topsong["label"] . "</td>");
-    print("<td class=\"count\">" . $topsong["count"] . "</td>");
-    print("</tr>\n");
-  }
-?>
-</table>
-<?
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_day, 'table_left', 'Top Artists (past day)');
+  renderTopTable($graphs->top_songs_day, 'table_right', 'Top Songs (past day)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_week, 'table_left', 'Top Artists (past week)');
+  renderTopTable($graphs->top_songs_week, 'table_right', 'Top Songs (past week)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_1_month, 'table_left', 'Top Artists (past month)');
+  renderTopTable($graphs->top_songs_1_month, 'table_right', 'Top Songs (past month)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_3_months, 'table_left', 'Top Artists (past 3 months)');
+  renderTopTable($graphs->top_songs_3_months, 'table_right', 'Top Songs (past 3 months)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_6_months, 'table_left', 'Top Artists (past 6 months)');
+  renderTopTable($graphs->top_songs_6_months, 'table_right', 'Top Songs (past 6 months)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_year, 'table_left', 'Top Artists (past year)');
+  renderTopTable($graphs->top_songs_year, 'table_right', 'Top Songs (past year)');
+
+  print '<br/>';
+  renderTopTable($graphs->top_artists_all_time, 'table_left', 'Top Artists (all time)');
+  renderTopTable($graphs->top_songs_all_time, 'table_right', 'Top Songs (all time)');
+
   // Invalid user given
   } else {
     Template::build_header("Invalid user");
@@ -78,6 +112,7 @@ if (isset($_GET['user'])) {
   Template::build_header("Welcome");
   print("Welcome to the song tracker.");
 ?>
+
 <table>
 <th>Username</th>
 <?
@@ -85,7 +120,7 @@ if (isset($_GET['user'])) {
   foreach ($users as $user) {
     print("<tr>");
     print("<td><a href=\"index.php?user=" . $user->name . "\">" . $user->name . "</a></td>");
-    print("</tr");
+    print("</tr>");
   }
 }
 ?>
