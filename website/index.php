@@ -9,10 +9,10 @@
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 'On');
 
-require_once("src/Song.php");
 require_once("src/Template.php");
 require_once("src/util.Query.php");
-require_once("src/User.php");
+require_once("src/model.Song.php");
+require_once("src/model.User.php");
 require_once("src/Graphs.php");
 
 header('Content-type: text/html; charset=utf-8');

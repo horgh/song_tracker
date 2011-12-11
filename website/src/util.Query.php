@@ -174,25 +174,6 @@ class Query {
   }
 
   /*
-   * @return bool Whether successful
-   */
-  public static function add_user($user, $email, $password) {
-    $hasher = new PasswordHash(12, FALSE);
-    $hash = $hasher->HashPassword($password);
-
-    $db = Database::instance();
-    $sql = "INSERT INTO users (name, pass, email) VALUES(?, ?, ?)";
-    $params = array($user, $hash, $email);
-    try {
-      $db->manipulate($sql, $params, 1);
-    } catch (Exception $e) {
-      Logger::log("add_user: failed to insert user");
-      return false;
-    }
-    return true;
-  }
-
-  /*
    * @return int user id, or -1 if not found
    */
   public static function get_id_by_name($user) {

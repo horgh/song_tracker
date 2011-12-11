@@ -9,13 +9,32 @@ require_once("Logger.php");
 require_once("Model.php");
 
 class User extends Model {
-  private $fields = array(
+  protected $fields = array(
                           'id',
                           'name',
                           'pass',
                           'email',
-                          'create-time',
+                          'create_time',
                          );
+
+  /*
+   * @return bool Whether successful
+   */
+  public function register($user, $email, $password) {
+    if (strlen($user) === 0 || strlen($email) === 0 || strlen($password) === 0) {
+      Logger::log("register: invalid user or email or password");
+      return false;
+    }
+
+    $hasher = new PasswordHash(12, FALSE);
+    $hash = $hasher->HashPassword($password);
+
+    $this->name = $user;
+    $this->email = $email;
+    $this->pass = $hash;
+
+    return $this->store();
+  }
 
   /*
    * @param string $name

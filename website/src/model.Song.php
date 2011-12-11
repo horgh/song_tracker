@@ -9,7 +9,7 @@ require_once("Model.php");
 require_once("util.DateFormat.php");
 
 class Song extends Model {
-  private $fields = array(
+  protected $fields = array(
                           'id',
                           'title',
                           'artist',
