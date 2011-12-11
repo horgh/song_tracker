@@ -47,7 +47,7 @@ class Format {
   }
 
   /*
-   * @return string Length in form: seconds. -1 if error
+   * @return string Length in form: milliseconds. -1 if error
    *
    * Length given in form hh:mm:ss or milliseconds, return in form of seconds
    * (hh: is optional)
@@ -55,14 +55,20 @@ class Format {
    * Used by add_play()
    */
   public static function fix_length($length) {
-    // If ":" found, assume form: mm:ss
+    // Already in ms (we assume)
+    if (is_numeric($length)) {
+      return $length;
+    }
+
+    // If ":" found, assume form: (hh:)?mm:ss
     if (strpos($length, ":") !== false) {
       if (preg_match('/^(\d+)?:?(\d+):(\d+)$/', $length, $matches) === false) {
         return -1;
       }
       // even if hh did not match, [1] still gets set (to 0)
       $seconds = $matches[1] * 60 * 60 + $matches[2] * 60 + $matches[3];
-      return $seconds;
+      $ms = $seconds * 1000;
+      return $ms;
     }
     return $length;
   }

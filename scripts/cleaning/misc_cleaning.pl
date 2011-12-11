@@ -206,6 +206,28 @@ sub convert_length_format {
   }
 }
 
+# Currently we store lengths as seconds
+# Convert seconds to milliseconds
+sub convert_length_format_s_to_ms {
+  my ($dbh) = @_;
+  # Get every song that has a length
+  my $sql = "SELECT * FROM songs WHERE length > ?";
+  my @params = (0);
+  my $href = &db_select($dbh, $sql, \@params);
+  foreach my $id (keys %$href) {
+    # Add length in seconds into new length2 column
+    my $length = $href->{$id}->{length};
+    my $ms = $length * 1000;
+    print "Length: $length\n";
+    print "In ms: $ms\n";
+    $sql = "UPDATE songs SET length2 = ? WHERE id = ?";
+    @params = ($ms, $id);
+    if (&db_manipulate($dbh, $sql, \@params) != 1) {
+      print "Error updating?! No rows affected! id: $id\n";
+    }
+  }
+}
+
 binmode STDOUT, ":encoding(utf8)";
 
 my $dsn = "DBI:Pg:dbname=songs;host=beast.lan";
@@ -216,3 +238,4 @@ my $dbh = DBI->connect($dsn, 'songs', 'songs', { pg_enable_utf8 => 1})
 #&merge_songs_with_no_albums($dbh);
 #&merge_songs_case_insensitive($dbh);
 #&convert_length_format($dbh);
+&convert_length_format_s_to_ms($dbh);
