@@ -44,10 +44,10 @@ if (isset($_POST['artist'])
     && isset($_GET['user']))
 {
   $user = new User();
-  if ($user->query_by_name($_GET['name'])) {
+  if ($user->query_by_name($_GET['user'])) {
     $lastSongPlay = $user->get_latest_songs(1);
     if (count($lastSongPlay) == 1) {
-      $song = $songs[0];
+      $song = $lastSongPlay[0];
       print($song->artist . " - " . $song->album . " - " . $song->title
             . " (" . $song->length . ")");
     } else {
