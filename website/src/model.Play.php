@@ -109,9 +109,66 @@ class Play extends Model {
     }
 
     $db = Database::instance();
+    // Now we can record the play. However, if a play has occurred within
+    // the past few seconds that indicates the previous play was not really
+    // played (was switched away from 'instantaneously'), so remove that
+    // false play prior to adding ours
+    $db->beginTransaction();
+    if (self::remove_invalid_previous_play($user) === -1) {
+      $db->rollBack();
+      Logger::log("add_play: failure removing any invalid previous play");
+      return false;
+    }
+
+    // Record the play
     $sql = "INSERT INTO plays (song_id, user_id) VALUES(?, ?)";
     $params = array($song_id, $user->id);
-    return $db->manipulate($sql, $params, 1) === 1;
+    if ($db->manipulate($sql, $params, 1, true) !== 1) {
+      $db->rollBack();
+      Logger::log("add_play: unexpectedly did not have row affected");
+      return false;
+    }
+    $db->commit();
+    return true;
+  }
+
+  /*
+   * @param User $user
+   *
+   * @return int Number of plays removed, or -1 if failure
+   *
+   * We do not have to remove a play in order to be a success, only not
+   * encounter an error
+   *
+   * Remove a play if it is within some delta of the current time as we will
+   * assume that it was not really played (next play was too close to the
+   * previous)
+   *
+   * We require the song to be greater in length than the interval as well
+   */
+  private static function remove_invalid_previous_play(User $user) {
+    // 20 seconds!
+    $secs = 20;
+    // for margin of error, add 5 seconds to required song length
+    $millisecs = ($secs + 5) * 1000;
+    $sql = "DELETE FROM plays p"
+         . " WHERE p.user_id = ?"
+         . " AND p.create_time > current_timestamp - interval '$secs seconds'"
+         . " AND p.song_id IN"
+         . "   (SELECT s.id FROM songs s"
+         . "    WHERE s.id = p.song_id"
+         . "    AND s.length > $millisecs"
+         . "   )";
+    $params = array($user->id);
+    $db = Database::instance();
+    try {
+      $count = $db->manipulate($sql, $params, NULL, true);
+    } catch (Exception $e) {
+      Logger::log("remove_invalid_previous_play: database failure: " . $e->getMessage());
+      return -1;
+    }
+    Logger::log("remove_invalid_previous_play: Removed $count invalid prior plays.");
+    return $count;
   }
 
   /*

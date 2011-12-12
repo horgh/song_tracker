@@ -25,7 +25,7 @@ set t [http::geturl $url -query $query -binary 1]
 if {$debug == 1} {
 	puts "Sending data: artist: $artist album: $album title: $title length: $length"
 	puts "Query: ${query}\n"
-	puts "Response: ([http::data $t])"
+	#puts "Response: ([http::data $t])"
 	puts "Converted response: ([encoding convertfrom utf-8 [http::data $t]])"
 }
 http::cleanup $t

@@ -62,6 +62,8 @@ class Database {
    * @param string $sql
    * @param array $params
    * @param int $expected
+   * @param bool $inTransaction Whether we are in transaction at a higher level
+   *                            (in which case we will not use transactions here)
    *
    * @return int number of rows affected
    *
@@ -70,26 +72,34 @@ class Database {
    * If $expected is non NULL, must be a numeric value and we will
    * error if this many rows were not affected
    */
-  function manipulate($sql, array $params, $expected = NULL) {
-    $this->beginTransaction();
+  function manipulate($sql, array $params, $expected = NULL, $inTransaction = false) {
+    if (!$inTransaction) {
+      $this->beginTransaction();
+    }
 
     // Since we're in a transaction, wrap this up so we end the
     // transaction correctly
     try {
       $sth = $this->query($sql, $params);
     } catch (Exception $e) {
-      $this->rollBack();
+      if (!$inTransaction) {
+        $this->rollBack();
+      }
       throw new Exception("failure executing query: " . $e->getMessage());
     }
 
     if ($expected !== NULL) {
       if ($sth->rowCount() != $expected) {
-        $this->rollBack();
+        if (!$inTransaction) {
+          $this->rollBack();
+        }
         throw new Exception("unexpected number of rows affected: got "
           . $sth->rowCount() . " but wanted $expected");
       }
     }
-    $this->commit();
+    if (!$inTransaction) {
+      $this->commit();
+    }
     return $sth->rowCount();
   }
 
