@@ -42,16 +42,14 @@ sub format_length {
 	my $seconds_total = POSIX::ceil($ms / 1000);
 	my $mins = POSIX::floor($seconds_total / 60);
 	my $seconds = $seconds_total % 60;
-	return "$mins:$seconds";
+  return (sprintf "%02d:%02d", $mins, $seconds);
 }
 
 sub get_song {
 	my $result = get($url);
 	die "Could not fetch song" unless defined $result;
 	# Response should have length given at the end in form: (ms)
-	Irssi::print("here1");
 	if ($result =~ /\((\d+)\)$/) {
-		Irssi::print("ytes");
 		my $length = &format_length($1);
 		$result =~ s/\((\d+\))$/($length)/;
 	}
