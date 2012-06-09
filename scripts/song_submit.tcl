@@ -4,11 +4,14 @@
 #
 
 package require http
+package require tls
 
-set url http://leviathan.summercat.com/~a/music/api.php
+set url https://leviathan.summercat.com/~a/music/api.php
 set username "cd"
 set password "password"
 set debug 1
+
+::http::register https 443 ::tls::socket
 
 if {$argc != 4 && $argc != 5} {
 	puts "Usage: $argv0 <artist> <album> <song> <length> \[url to api.php\]"
@@ -20,12 +23,12 @@ if {$argc == 5} {
 	set url [lindex $argv 4]
 }
 
-set query [http::formatQuery artist $artist album $album title $title length $length user $username pass $password]
-set t [http::geturl $url -query $query -binary 1]
+set query [::http::formatQuery artist $artist album $album title $title length $length user $username pass $password]
+set t [::http::geturl $url -query $query -binary 1]
 if {$debug == 1} {
 	puts "Sending data: artist: $artist album: $album title: $title length: $length"
 	puts "Query: ${query}\n"
 	#puts "Response: ([http::data $t])"
-	puts "Converted response: ([encoding convertfrom utf-8 [http::data $t]])"
+	puts "Converted response: ([encoding convertfrom utf-8 [::http::data $t]])"
 }
 http::cleanup $t
