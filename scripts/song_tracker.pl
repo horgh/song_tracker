@@ -16,7 +16,12 @@ use warnings;
 # for ceil/floor
 use POSIX ();
 
-use LWP::Simple;
+# Use LWP::UserAgent instead of LWP::Simple for https. This may only be
+# necessary to set the VERIFY_HOSTNAME off as that may be causing the
+# failures I have seen (due to my self signed cert).
+use LWP::UserAgent ();
+# Disable SSL verification
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 use vars qw($VERSION %IRSSI);
 
@@ -33,7 +38,7 @@ $VERSION = "0.1";
 
 # Configuration
 my $username = "cd";
-my $url = "http://leviathan.summercat.com/~a/music/api.php?last=1&user=$username";
+my $url = "https://leviathan.summercat.com/~a/music/api.php?last=1&user=$username";
 
 # Take a length in milliseconds and return in a nicer format:
 # mm:ss
@@ -45,9 +50,17 @@ sub format_length {
   return (sprintf "%02d:%02d", $mins, $seconds);
 }
 
+# @return mixed string or undef
 sub get_song {
-	my $result = get($url);
-	die "Could not fetch song" unless defined $result;
+  my $ua = LWP::UserAgent->new;
+  my $req = HTTP::Request->new(GET => $url,);
+  my $res = $ua->request($req);
+  if (!$res->is_success) {
+    Irssi::print("Could not fetch song");
+    return undef;
+  }
+  my $result = $res->decoded_content;
+
 	# Response should have length given at the end in form: (ms)
 	if ($result =~ /\((\d+)\)$/) {
 		my $length = &format_length($1);
@@ -58,8 +71,8 @@ sub get_song {
 
 sub cmd_np {
 	my ($data, $server, $witem) = @_;
-	my $track = &get_song();
-	if ($witem) {
+	my $track = &get_song;
+	if ($track && $witem) {
 		$witem->command("say np: $track");
 	}
 }
