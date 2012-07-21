@@ -53,10 +53,14 @@ sub format_length {
 # @return mixed string or undef
 sub get_song {
   my $ua = LWP::UserAgent->new;
+  $ua->ssl_opts(
+                # don't check cert
+                verify_hostname => 0,
+                );
   my $req = HTTP::Request->new(GET => $url,);
   my $res = $ua->request($req);
   if (!$res->is_success) {
-    Irssi::print("Could not fetch song");
+    Irssi::print("Could not fetch song: " . $res->status_line);
     return undef;
   }
   my $result = $res->decoded_content;
