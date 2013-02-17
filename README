@@ -4,14 +4,16 @@
 
 
 = Setup =
- 1. Create a database and user.
+ 1. Create a database and a database user.
 
  2. Set $DB_ variables to match the above in src/Database.php
 
  3. Import schema_postgres.sql to this database.
 
  4. Place website/ directory in a webserver accesible location.
+
  5. Visit http://your.website/music/register.php to register.
+
  6. Begin updating to api.php!
 
 
