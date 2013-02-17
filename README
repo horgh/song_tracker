@@ -1,8 +1,9 @@
-Requirements:
+= Requirements =
  - PHP 5.3+
  - PostgreSQL (recent version?)
 
-Setup:
+
+= Setup =
  1. Create a database and user.
 
  2. Set $DB_ variables to match the above in src/Database.php
@@ -13,7 +14,8 @@ Setup:
  5. Visit http://your.website/music/register.php to register.
  6. Begin updating to api.php!
 
-URLs:
+
+= URLs =
  By default, visiting a user page is
  http://your.website/music/index.php?user=username
  With URL rewriting you can have a URL such as
@@ -24,3 +26,22 @@ URLs:
   )
  Note: the mod_rewrite module must be loaded.
  A similar rule can be used with other webservers.
+
+
+= Tracking plays in audacious =
+ * Enable the plugin 'Song Change' (under Plugins -> General)
+
+ * Go into the plugin's preferences and add a command for
+  'command to run when Audacious starts a new song':
+
+  This must include the path to a script to submit to the
+  song tracker, such as song_submit.tcl:
+
+  /path/to/song_submit.tcl "%a" "%b" "%T" "%l"
+
+ * Create a song_submit configuration file. There should be a sample
+   configuration available to you entitled song_submit.conf.sample.
+   Update this sample and place it in the file ~/.config/song_submit
+
+ * When you play a song, the play should now be recorded on your
+   song tracker account.
