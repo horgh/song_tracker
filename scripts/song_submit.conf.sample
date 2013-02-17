@@ -1,0 +1,4 @@
+username = cd
+password = password
+url = https://leviathan.summercat.com/~a/music/api.php
+debug = 1
