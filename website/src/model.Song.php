@@ -1,6 +1,6 @@
 <?php
 /*
- * Work with the songs table
+ * Work with the song table
  */
 
 require_once("Database.php");
@@ -26,7 +26,7 @@ class Song extends Model {
 
     // First attempt to insert new song row
     $sql = '
-INSERT INTO songs
+INSERT INTO song
 (artist, album, title, length)
 VALUES(?, ?, ?, ?)
 ';
@@ -53,7 +53,7 @@ VALUES(?, ?, ?, ?)
     $db = Database::instance();
     $sql = '
 SELECT id
-FROM songs
+FROM song
 WHERE
 LOWER(title) = LOWER(?)
 AND LOWER(artist) = LOWER(?)
@@ -96,8 +96,8 @@ s.artist,
 s.album,
 s.title,
 s.length
-FROM plays p,
-songs s
+FROM play p,
+song s
 WHERE
 p.song_id = s.id
 AND p.user_id = ?

@@ -1,6 +1,6 @@
 <?php
 /*
- * Work with the plays table
+ * Work with the play table
  */
 
 require_once("Database.php");
@@ -54,7 +54,7 @@ class Play extends Model {
     }
 
     $db = Database::instance();
-    $sql = "SELECT COUNT(1) FROM plays WHERE user_id = ?";
+    $sql = "SELECT COUNT(1) FROM play WHERE user_id = ?";
     $params = array($user->id);
     try {
       $rows = $db->select($sql, $params);
@@ -122,7 +122,7 @@ class Play extends Model {
     }
 
     // Record the play
-    $sql = "INSERT INTO plays (song_id, user_id) VALUES(?, ?)";
+    $sql = "INSERT INTO play (song_id, user_id) VALUES(?, ?)";
     $params = array($song_id, $user->id);
     if ($db->manipulate($sql, $params, 1, true) !== 1) {
       $db->rollBack();
@@ -154,13 +154,13 @@ class Play extends Model {
     // for margin of error, add 5 seconds to required song length
     $millisecs = ($secs + 5) * 1000;
     $sql = '
-DELETE FROM plays p
+DELETE FROM play p
 WHERE
 p.user_id = ?
 AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
 AND p.song_id IN
   (SELECT s.id
-   FROM songs s
+   FROM song s
    WHERE
    s.id = p.song_id
    AND s.length > ?

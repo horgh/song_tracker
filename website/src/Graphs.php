@@ -22,8 +22,8 @@ class Graphs {
 SELECT
 COUNT(s.id) AS count,
 s.artist AS label
-FROM plays p
-JOIN songs s
+FROM play p
+JOIN song s
 ON p.song_id = s.id
 WHERE
 p.user_id = ?
@@ -40,8 +40,8 @@ LIMIT ?
 SELECT
 COUNT(1) AS count,
 CONCAT(s.artist, \' - \', s.title) AS label
-FROM plays p
-JOIN songs s
+FROM play p
+JOIN song s
 ON p.song_id = s.id
 WHERE
 p.user_id = ?
@@ -80,8 +80,8 @@ LIMIT ?
 SELECT
 COUNT(s.id) AS count,
 s.artist AS label
-FROM plays p
-JOIN songs s
+FROM play p
+JOIN song s
 ON p.song_id = s.id
 WHERE
 p.user_id = ?
@@ -105,8 +105,8 @@ LIMIT ?
 SELECT
 COUNT(1) AS count,
 CONCAT(s.artist, \' - \', s.title) AS label
-FROM plays p
-JOIN songs s
+FROM play p
+JOIN song s
 ON p.song_id = s.id
 WHERE
 p.user_id = ?
