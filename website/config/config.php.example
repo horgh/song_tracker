@@ -1,0 +1,11 @@
+<?php
+
+ini_set('error_reporting', E_ALL | E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT);
+ini_set('display_errors', 'On');
+
+// database credentials.
+define('SONGS_DB_HOST', 'localhost');
+define('SONGS_DB_PORT', '5432');
+define('SONGS_DB_NAME', 'songs_test');
+define('SONGS_DB_USER', 'songs');
+define('SONGS_DB_PASS', 'songs');

@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Taken from MyQuote, written by me!
  */
@@ -73,4 +73,3 @@ class Format {
     return $length;
   }
 }
-?>

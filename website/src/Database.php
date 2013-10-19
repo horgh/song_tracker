@@ -1,24 +1,22 @@
-<?
-/*
- * Must set the $DB_ vars below
- */
-
+<?php
 class Database {
-  private static $DB_HOST = "beast";
-  private static $DB_USER = "songs";
-  private static $DB_PASS = "songs";
-  private static $DB_NAME = "songs";
+  private static $DB_HOST = SONGS_DB_HOST;
+  private static $DB_PORT = SONGS_DB_PORT;
+  private static $DB_NAME = SONGS_DB_NAME;
+  private static $DB_USER = SONGS_DB_USER;
+  private static $DB_PASS = SONGS_DB_PASS;
 
-  private static $instance;
+  private static $instance = NULL;
 
-  private $dbh;
+  private $dbh = NULL;
 
   /*
    * Throws exception if fails to connect
    */
   function __construct() {
     $dsn = "pgsql:dbname=" . self::$DB_NAME
-         . ";host=" . self::$DB_HOST;
+         . ";host=" . self::$DB_HOST
+				 . ';port=' . self::$DB_PORT;
 
     $this->dbh = new PDO($dsn, self::$DB_USER, self::$DB_PASS);
     // exception on error
@@ -121,4 +119,3 @@ class Database {
     }
   }
 }
-?>

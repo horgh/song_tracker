@@ -1,4 +1,4 @@
-<?
+<?php
 require_once("Database.php");
 
 $db = Database::instance();
@@ -18,4 +18,3 @@ if (count($rows) !== 1) {
   print("Got id $id, title $title, artist $artist, album $album, length $length");
   print("Artist: _" . $artist . "_ Title: _" . $title . "_");
 }
-?>

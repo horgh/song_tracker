@@ -1,20 +1,16 @@
-<?
+<?php
 /*
- * 20/08/2010
+ * 2010-08-20
  * by horgh
  *
  * Front-end to song/plays database
  */
 
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 'On');
-
+require_once(__DIR__ . '/config/config.php');
 require_once("src/Template.php");
 require_once("src/model.Song.php");
 require_once("src/model.User.php");
 require_once("src/Graphs.php");
-
-header('Content-type: text/html; charset=utf-8');
 
 /*
  * @param array $graph_array   An array from Graphs
@@ -56,7 +52,7 @@ if (isset($_GET['user'])) {
 <th>Album</th>
 <th>Title</th>
 <th>Played</th>
-<?
+<?php
     $songs = $user->get_latest_songs(20);
     foreach ($songs as $song) {
       print("<tr>");
@@ -115,7 +111,7 @@ if (isset($_GET['user'])) {
 
 <table>
 <th>Username</th>
-<?
+<?php
   $users = User::get_all();
   foreach ($users as $user) {
     print("<tr>");
@@ -125,6 +121,5 @@ if (isset($_GET['user'])) {
 }
 ?>
 </table>
-<?
+<?php
 Template::build_footer();
-?>

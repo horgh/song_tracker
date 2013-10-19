@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Graphs object extracts some data corresponding to various
  * statistics for a user
@@ -107,4 +107,3 @@ class Graphs {
     return $entries;
   }
 }
-?>

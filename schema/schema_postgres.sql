@@ -10,8 +10,10 @@ CREATE TABLE songs (
   UNIQUE (title, artist, album),
   PRIMARY KEY (id)
 );
+
 -- Make song unique & case insensitive
-CREATE UNIQUE INDEX lower_song_idx ON songs (LOWER(title), LOWER(artist), LOWER(album));
+CREATE UNIQUE INDEX lower_song_idx
+ON songs (LOWER(title), LOWER(artist), LOWER(album));
 
 -- Each user
 CREATE TABLE users (

@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Provide some templating / generic html
 */
@@ -10,19 +10,18 @@ class Template {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="style.css" rel="stylesheet" type="text/css" />
-<?
-print("<title>" . $title . "</title>\n");
+<?php
+print("<title>" . htmlspecialchars($title) . "</title>\n");
 ?>
 </head>
 <body>
-<?
+<?php
   }
 
   public static function build_footer() {
 ?>
 </body>
 </html>
-<?
+<?php
   }
 }
-?>

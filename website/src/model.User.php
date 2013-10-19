@@ -128,4 +128,3 @@ class User extends Model {
     return Song::get_users_latest_songs($this, $count);
   }
 }
-?>

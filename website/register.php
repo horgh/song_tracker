@@ -1,11 +1,9 @@
-<?
+<?php
 /*
  * User registration page
  */
 
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 'On');
-
+require_once(__DIR__ . '/config/config.php');
 require_once("src/model.User.php");
 require_once("src/Template.php");
 
@@ -50,7 +48,6 @@ if (isset($_POST['user']) && isset($_POST['email']) && isset($_POST['password'])
     </tr>
   </table>
 </form>
-<?
+<?php
 }
 Template::build_footer();
-?>

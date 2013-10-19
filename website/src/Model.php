@@ -286,4 +286,3 @@ class Model {
     return $count === 1;
   }
 }
-?>

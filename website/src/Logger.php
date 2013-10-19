@@ -4,4 +4,3 @@ class Logger {
     print "Log: $msg<br />";
   }
 }
-?>
