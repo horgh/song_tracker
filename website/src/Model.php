@@ -29,8 +29,8 @@ class Model {
   }
 
   /*
-   * @param string $field   Database field to select with (WHERE field)
-   * @param string $data    Data to use with the field
+   * @param string $field Database field to select with (WHERE field)
+   * @param string $data Data to use with the field
    *
    * @return bool Whether successful
    *
@@ -44,8 +44,12 @@ class Model {
     }
 
     $db = Database::instance();
-    $sql = "SELECT * FROM " . self::get_table_name()
-         . " WHERE $field = ?";
+    $sql = '
+SELECT *
+FROM ' . self::get_table_name() . '
+WHERE
+' . $field . ' = ?
+';
     $params = array($data);
     try {
       $rows = $db->select($sql, $params);
@@ -82,7 +86,7 @@ class Model {
    */
   public static function get_all() {
     $db = Database::instance();
-    $sql = "SELECT * FROM " . self::get_table_name();
+    $sql = 'SELECT * FROM ' . self::get_table_name();
     $params = array();
     try {
       $rows = $db->select($sql, $params);
@@ -105,8 +109,8 @@ class Model {
   }
 
   /*
-   * @param array $row   A row from the database which should have all the
-   *                     fields we require
+   * @param array $row A row from the database which should have all the
+   *   fields we require
    *
    * @return bool Whether successful
    */
@@ -151,14 +155,13 @@ class Model {
    */
   private function update() {
     // Build SQL statement
-    $sql = "UPDATE " . self::get_table_name()
-         . " SET ";
+    $sql = 'UPDATE ' . self::get_table_name() . ' SET ';
 
     $field_names = $this->get_field_names();
     foreach ($field_names as $field) {
       $sql .= " $field = ?";
     }
-    $sql .= " WHERE id = ?";
+    $sql .= ' WHERE id = ?';
 
     // Build params array
     $params = $this->get_field_values();

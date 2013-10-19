@@ -9,15 +9,18 @@ require_once("src/Template.php");
 
 Template::build_header("Registration");
 
-if (isset($_POST['user']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_confirm']) && isset($_POST['register'])) {
-  if ($_POST['password'] != $_POST['password_confirm']) {
-    print("Passwords do not match!");
+if (isset($_POST['user']) && isset($_POST['email'])
+	&& isset($_POST['password']) && isset($_POST['password_confirm'])
+  && isset($_POST['register']))
+{
+  if ($_POST['password'] !== $_POST['password_confirm']) {
+    print "Passwords do not match!";
   } else {
     $user = new User();
     if ($user->register($_POST['user'], $_POST['email'], $_POST['password'])) {
-      print("Registration successful.");
+      print "Registration successful.";
     } else {
-      print("Registration failed. Username or e-mail already in use!");
+      print "Registration failed. Username or e-mail already in use!";
     }
   }
 
@@ -25,7 +28,8 @@ if (isset($_POST['user']) && isset($_POST['email']) && isset($_POST['password'])
 } else {
 ?>
 <h1>Registration</h1>
-<form action="register.php" method="post">
+<form action="register.php" method="POST"
+  autocomplete="off">
   <table>
     <tr>
       <th>Username</th>

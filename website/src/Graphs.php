@@ -12,28 +12,46 @@ class Graphs {
    * @param int $user_id
    * @param int $count
    *
-   * @return bool  Whether successful
+   * @return bool Whether successful
    */
   function __construct($user_id, $count) {
     $this->user_id = $user_id;
     $this->count = $count;
 
-    $sql_artists_all_time = "SELECT COUNT(s.id) AS count, s.artist AS label"
-                 . " FROM plays p JOIN songs s ON p.song_id = s.id"
-                 . " WHERE p.user_id = ? AND s.artist != 'N/A'"
-                 . " GROUP BY s.artist"
-                 . " ORDER BY count DESC"
-                 . " LIMIT ?";
-    $this->top_artists_all_time = self::build_graph($sql_artists_all_time);
+    $sql_artists_all_time = '
+SELECT
+COUNT(s.id) AS count,
+s.artist AS label
+FROM plays p
+JOIN songs s
+ON p.song_id = s.id
+WHERE
+p.user_id = ?
+AND s.artist != \'N/A\'
+GROUP BY s.artist
+ORDER BY count DESC
+LIMIT ?
+';
+    $params = array($this->user_id, $this->count);
+    $this->top_artists_all_time = self::build_graph($sql_artists_all_time,
+      $params);
 
-    $sql_songs_all_time = "SELECT COUNT(1) AS count,"
-               . "   CONCAT(s.artist, ' - ', s.title) AS label"
-               . " FROM plays p JOIN songs s ON p.song_id = s.id"
-               . " WHERE p.user_id = ?"
-               . " GROUP BY label"
-               . " ORDER BY count DESC"
-               . " LIMIT ?";
-    $this->top_songs_all_time = self::build_graph($sql_songs_all_time);
+    $sql_songs_all_time = '
+SELECT
+COUNT(1) AS count,
+CONCAT(s.artist, \' - \', s.title) AS label
+FROM plays p
+JOIN songs s
+ON p.song_id = s.id
+WHERE
+p.user_id = ?
+GROUP BY label
+ORDER BY count DESC
+LIMIT ?
+';
+    $params = array($this->user_id, $this->count);
+    $this->top_songs_all_time = self::build_graph($sql_songs_all_time,
+      $params);
 
     $this->top_artists_year = self::top_artists_past_interval('1 year');
     $this->top_artists_6_months = self::top_artists_past_interval('6 month');
@@ -53,43 +71,56 @@ class Graphs {
   }
 
   /*
-   * @param string $interval    e.g. 1 month, 1 week, 1 day, etc
+   * @param string $interval e.g. 1 month, 1 week, 1 day, etc
    *
    * @return array Graph array
    */
   private function top_artists_past_interval($interval) {
-    $sql = ''
-      . " SELECT COUNT(s.id) AS count, s.artist AS label"
-      . " FROM plays p JOIN songs s ON p.song_id = s.id"
-      . " WHERE p.user_id = ? AND s.artist != 'N/A'"
-      . "   AND p.create_time > current_timestamp - interval '$interval'"
-      . " GROUP BY s.artist"
-      . " ORDER BY count DESC"
-      . " LIMIT ?";
-    return self::build_graph($sql);
+    $sql = '
+SELECT
+COUNT(s.id) AS count,
+s.artist AS label
+FROM plays p
+JOIN songs s
+ON p.song_id = s.id
+WHERE
+p.user_id = ?
+AND s.artist != \'N/A\'
+AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
+GROUP BY s.artist
+ORDER BY count DESC
+LIMIT ?
+';
+    $params = array($this->user_id, $interval, $this->count);
+    return self::build_graph($sql, $params);
   }
 
   /*
-   * @param string $interval   e.g. 1 month, 1 week, 1 day, etc
+   * @param string $interval e.g. 1 month, 1 week, 1 day, etc
    *
    * @return array Graph array
    */
   private function top_songs_past_interval($interval) {
-    $sql = ''
-      . " SELECT COUNT(1) AS count,"
-      . "   CONCAT(s.artist, ' - ', s.title) AS label"
-      . " FROM plays p JOIN songs s ON p.song_id = s.id"
-      . " WHERE p.user_id = ?"
-      . "   AND p.create_time > current_timestamp - interval '$interval'"
-      . " GROUP BY label"
-      . " ORDER BY count DESC"
-      . " LIMIT ?";
-    return self::build_graph($sql);
+    $sql = '
+SELECT
+COUNT(1) AS count,
+CONCAT(s.artist, \' - \', s.title) AS label
+FROM plays p
+JOIN songs s
+ON p.song_id = s.id
+WHERE
+p.user_id = ?
+AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
+GROUP BY label
+ORDER BY count DESC
+LIMIT ?
+';
+    $params = array($this->user_id, $interval, $this->count);
+    return self::build_graph($sql, $params);
   }
 
-  private function build_graph($sql) {
+  private function build_graph($sql, array $params) {
     $db = Database::instance();
-    $params = array($this->user_id, $this->count);
     try {
       $rows = $db->select($sql, $params);
     } catch (Exception $e) {
@@ -100,9 +131,9 @@ class Graphs {
     $entries = array();
     foreach ($rows as $row) {
       $entries[] = array(
-                          'count' => $row['count'],
-                          'label' => $row['label'],
-                        );
+        'count' => $row['count'],
+        'label' => $row['label'],
+      );
     }
     return $entries;
   }

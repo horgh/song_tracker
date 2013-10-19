@@ -4,6 +4,8 @@
  *  - new play: POST: user, pass, artist, album, title, length
  *  - last play: GET: user, last
  *
+ * NOTE: response is not html encoded right now - it's just plaintext.
+ *
  * TODO:
  * - respond with json instead
  * - require an action parameter to identify the api request rather
@@ -16,7 +18,7 @@ require_once("src/model.Song.php");
 require_once("src/model.User.php");
 require_once("src/model.Play.php");
 
-header('Content-type: text/html; charset=utf-8');
+header('Content-type: text/plain; charset=utf-8');
 
 // Update sent
 if (isset($_POST['artist'])

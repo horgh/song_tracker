@@ -11,11 +11,11 @@ require_once("util.Format.php");
 
 class Play extends Model {
   protected $fields = array(
-                            'id',
-                            'song_id',
-                            'user_id',
-                            'create_time',
-                            );
+    'id',
+    'song_id',
+    'user_id',
+    'create_time',
+  );
   
   /*
    * Overload parent method
@@ -29,7 +29,7 @@ class Play extends Model {
   }
 
   /*
-   * @param array $row   Row of data from db
+   * @param array $row Row of data from db
    *
    * @return bool Whether successful
    *
@@ -72,7 +72,9 @@ class Play extends Model {
   /*
    * @return bool whether successful
    */
-  public static function add_play(User $user, $artist, $album, $title, $length) {
+  public static function add_play(User $user, $artist, $album, $title,
+    $length)
+  {
     $length = Format::fix_length($length);
 
     // unknown artist/album ("") becomes "N/A"
@@ -90,11 +92,9 @@ class Play extends Model {
     }
 
     // do not add if last song for user is identical
-    /*
-    if (self::repeat($user->get_id(), $artist, $album, $title, $length)) {
-      return false;
-    }
-    */
+    //if (self::repeat($user->get_id(), $artist, $album, $title, $length)) {
+    //  return false;
+    //}
 
     if ($user->authenticate()) {
       Logger::log("add_play: invalid user");
@@ -102,6 +102,7 @@ class Play extends Model {
     }
 
     // May need a new song record before the play
+    // XXX: insert song should check if it exists first !
     $song_id = Song::insert_song($artist, $album, $title, $length);
     if ($song_id == -1) {
       Logger::log("add_play: failed to insert song");
@@ -147,27 +148,35 @@ class Play extends Model {
    * We require the song to be greater in length than the interval as well
    */
   private static function remove_invalid_previous_play(User $user) {
+    // XXX: make this a config variable
     // 20 seconds!
     $secs = 20;
     // for margin of error, add 5 seconds to required song length
     $millisecs = ($secs + 5) * 1000;
-    $sql = "DELETE FROM plays p"
-         . " WHERE p.user_id = ?"
-         . " AND p.create_time > current_timestamp - interval '$secs seconds'"
-         . " AND p.song_id IN"
-         . "   (SELECT s.id FROM songs s"
-         . "    WHERE s.id = p.song_id"
-         . "    AND s.length > $millisecs"
-         . "   )";
-    $params = array($user->id);
+    $sql = '
+DELETE FROM plays p
+WHERE
+p.user_id = ?
+AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
+AND p.song_id IN
+  (SELECT s.id
+   FROM songs s
+   WHERE
+   s.id = p.song_id
+   AND s.length > ?
+  )
+';
+    $params = array($user->id, "$secs seconds", $millisecs);
     $db = Database::instance();
     try {
       $count = $db->manipulate($sql, $params, NULL, true);
     } catch (Exception $e) {
-      Logger::log("remove_invalid_previous_play: database failure: " . $e->getMessage());
+      Logger::log("remove_invalid_previous_play: database failure: "
+        . $e->getMessage());
       return -1;
     }
-    Logger::log("remove_invalid_previous_play: Removed $count invalid prior plays.");
+    Logger::log("remove_invalid_previous_play: Removed $count invalid"
+      . " prior plays.");
     return $count;
   }
 
@@ -185,7 +194,8 @@ class Play extends Model {
     }
 
     $last = $lastPlaySongs[0];
-    return $last->artist == $artist && $last->album == $album && $last->title == $title && $last->length == $length;
+    return $last->artist == $artist && $last->album == $album
+      && $last->title == $title && $last->length == $length;
   }
 
 }

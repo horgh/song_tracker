@@ -13,23 +13,23 @@ require_once("src/model.User.php");
 require_once("src/Graphs.php");
 
 /*
- * @param array $graph_array   An array from Graphs
- * @param string $class        CSS class to use for the table
- * @param string $title        Table title
+ * @param array $graph_array An array from Graphs
+ * @param string $class CSS class to use for the table
+ * @param string $title Table title
  *
  * @return void
  *
  * SIDE EFFECT: Prints to stdout
  */
 function renderTopTable(array $graph_array, $class, $title) {
-  print '<table class="' . $class . '">';
-  print '<th>' . $title . '</th>';
+  print '<table class="' . htmlspecialchars($class) . '">';
+  print '<th>' . htmlspecialchars($title) . '</th>';
   print '<th>Plays</th>';
 
   foreach ($graph_array as $item) {
     print "<tr>";
-      print '<td class="label">' . $item['label'] . '</td>';
-      print '<td class="label">' . $item['count'] . '</td>';
+      print '<td class="label">' . htmlspecialchars($item['label']) . '</td>';
+      print '<td class="label">' . htmlspecialchars($item['count']) . '</td>';
     print "</tr>";
   }
   print '</table>';
@@ -43,8 +43,9 @@ if (isset($_GET['user'])) {
   $user = new User();
   if ($user->query_by_name($_GET['user'])) {
     Template::build_header($user->name . "'s music");
-    print("<h1>" . $user->name . "'s music</h1>\n");
-    print("<h3>Total plays: " . $user->get_play_count() . "</h3>\n");
+    print "<h1>" . htmlspecialchars($user->name) . "'s music</h1>";
+    print "<h3>Total plays: " . htmlspecialchars($user->get_play_count())
+      . "</h3>";
 ?>
 
 <table id="just_played">
@@ -55,12 +56,12 @@ if (isset($_GET['user'])) {
 <?php
     $songs = $user->get_latest_songs(20);
     foreach ($songs as $song) {
-      print("<tr>");
-      print("<td>" . $song->artist . "</td>");
-      print("<td>" . $song->album . "</td>");
-      print("<td>" . $song->title . "</td>");
-      print("<td>" . $song->play->time_since . "</td>");
-      print("</tr>\n");
+      print "<tr>";
+      print "<td>" . htmlspecialchars($song->artist) . "</td>";
+      print "<td>" . htmlspecialchars($song->album) . "</td>";
+      print "<td>" . htmlspecialchars($song->title) . "</td>";
+      print "<td>" . htmlspecialchars($song->play->time_since) . "</td>";
+      print "</tr>";
     }
 ?>
 </table>
@@ -101,12 +102,12 @@ if (isset($_GET['user'])) {
   // Invalid user given
   } else {
     Template::build_header("Invalid user");
-    print("User not found.");
+    print "User not found.";
   }
 // No user set
 } else {
   Template::build_header("Welcome");
-  print("Welcome to the song tracker.");
+  print "Welcome to the song tracker.";
 ?>
 
 <table>
@@ -114,9 +115,12 @@ if (isset($_GET['user'])) {
 <?php
   $users = User::get_all();
   foreach ($users as $user) {
-    print("<tr>");
-    print("<td><a href=\"index.php?user=" . $user->name . "\">" . $user->name . "</a></td>");
-    print("</tr>");
+    print "<tr>";
+    print "<td>";
+    print "<a href=\"index.php?user="
+      . htmlspecialchars(rawurlencode($user->name)) . "\">"
+      . htmlspecialchars($user->name) . "</a></td>";
+    print "</tr>";
   }
 }
 ?>

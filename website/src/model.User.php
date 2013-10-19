@@ -11,15 +11,15 @@ require_once("model.Play.php");
 
 class User extends Model {
   protected $fields = array(
-                          'id',
-                          'name',
-                          'pass',
-                          'email',
-                          'create_time',
-                         );
+    'id',
+    'name',
+    'pass',
+    'email',
+    'create_time',
+  );
 
   /*
-   * @param string $name   Name of user to find
+   * @param string $name Name of user to find
    *
    * @return bool whether successful
    */
@@ -35,7 +35,9 @@ class User extends Model {
    * @return bool Whether successful
    */
   public function register($user, $email, $password) {
-    if (strlen($user) === 0 || strlen($email) === 0 || strlen($password) === 0) {
+    if (strlen($user) === 0 || strlen($email) === 0
+      || strlen($password) === 0)
+    {
       Logger::log("register: invalid user or email or password");
       return false;
     }
@@ -52,7 +54,7 @@ class User extends Model {
 
   /*
    * @param string $name
-   * @param string $password   Password given by user
+   * @param string $password Password given by user
    *
    * @return bool Whether user authenticates successfully
    */
@@ -79,7 +81,8 @@ class User extends Model {
     try {
       $rows = $db->select($sql, $params);
     } catch (Exception $e) {
-      Logger::log("get_user_names: Failed to retrieve names: " . $e->getMessage());
+      Logger::log("get_user_names: Failed to retrieve names: "
+        . $e->getMessage());
       return array();
     }
 
@@ -91,8 +94,8 @@ class User extends Model {
   }
 
   /*
-   * @return bool   Whether object has been initialised with the data
-   *                of a user
+   * @return bool Whether object has been initialised with the data
+   *   of a user
    */
   private function initialised() {
     return isset($this->id);

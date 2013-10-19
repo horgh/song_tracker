@@ -9,12 +9,12 @@ require_once("Model.php");
 
 class Song extends Model {
   protected $fields = array(
-                          'id',
-                          'title',
-                          'artist',
-                          'album',
-                          'length',
-                         );
+    'id',
+    'title',
+    'artist',
+    'album',
+    'length',
+  );
 
   /*
    * @return int id of song matching given data
@@ -25,7 +25,11 @@ class Song extends Model {
     $db = Database::instance();
 
     // First attempt to insert new song row
-    $sql = "INSERT INTO songs (artist, album, title, length) VALUES(?, ?, ?, ?)";
+    $sql = '
+INSERT INTO songs
+(artist, album, title, length)
+VALUES(?, ?, ?, ?)
+';
     $params = array($artist, $album, $title, $length);
     // We can expect to fail (if song is already in db)
     try {
@@ -47,10 +51,14 @@ class Song extends Model {
    */
   public static function get_song_id_by_names($title, $artist, $album) {
     $db = Database::instance();
-    $sql = "SELECT id FROM songs"
-         . " WHERE LOWER(title) = LOWER(?)"
-         . "  AND LOWER(artist) = LOWER(?)"
-         . "  AND LOWER(album) = LOWER(?)";
+    $sql = '
+SELECT id
+FROM songs
+WHERE
+LOWER(title) = LOWER(?)
+AND LOWER(artist) = LOWER(?)
+AND LOWER(album) = LOWER(?)
+';
     $params = array($title, $artist, $album);
     try {
       $rows = $db->select($sql, $params);
@@ -79,11 +87,23 @@ class Song extends Model {
     }
 
     $db = Database::instance();
-    $sql = "SELECT p.id AS play_id, p.create_time, s.id, s.artist, s.album, s.title, s.length"
-         . " FROM plays p, songs s"
-         . " WHERE p.song_id = s.id AND p.user_id = ?"
-         . " ORDER BY p.create_time DESC"
-         . " LIMIT ?";
+    $sql = '
+SELECT
+p.id AS play_id,
+p.create_time,
+s.id,
+s.artist,
+s.album,
+s.title,
+s.length
+FROM plays p,
+songs s
+WHERE
+p.song_id = s.id
+AND p.user_id = ?
+ORDER BY p.create_time DESC
+LIMIT ?
+';
     $params = array($user->id, $count);
     try {
       $rows = $db->select($sql, $params);
@@ -102,11 +122,11 @@ class Song extends Model {
 
       $play = new Play();
       if (!$play->fill_fields(array(
-                                    'id' => $row['play_id'],
-                                    'song_id' => $row['id'],
-                                    'user_id' => $user->id,
-                                    'create_time' => $row['create_time'],
-                                   )))
+        'id' => $row['play_id'],
+        'song_id' => $row['id'],
+        'user_id' => $user->id,
+        'create_time' => $row['create_time'],
+      )))
       {
         Logger::log("get_users_latest_songs: failed to build play object");
         return array();
