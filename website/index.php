@@ -10,11 +10,10 @@ require_once(__DIR__ . '/config/config.php');
 require_once("src/Template.php");
 require_once("src/model.Song.php");
 require_once("src/model.User.php");
-require_once("src/Graphs.php");
 
 /*
- * @param array $graph_array An array from Graphs
- * @param string $class CSS class to use for the table
+ * @param string $id Id to use for the element
+ * @param string $class Class to use for the element
  * @param string $title Table title
  *
  * @return void
@@ -22,24 +21,18 @@ require_once("src/Graphs.php");
  * SIDE EFFECT: Prints to stdout
  *
  * TODO: convert this to not be a table perhaps
- * TODO: we will not need the first parameter once the conversion to
- *   ajax requests is complete.
  */
-function renderTopTable(array $graph_array, $class, $title, $id = NULL) {
-  print '<table class="' . htmlspecialchars($class) . '"';
-  if ($id !== NULL) {
-    print ' id="' . htmlspecialchars($id) . '"';
+function renderTopTable($id, $class, $title) {
+  if (!is_string($id) || strlen($id) === 0
+    || !is_string($class) || strlen($class) === 0
+    || !is_string($title) || strlen($title) === 0) {
+    return;
   }
-  print '>';
+  print '<table class="' . htmlspecialchars($class) . '"
+    id="' . htmlspecialchars($id) . '"
+    >';
   print '<th>' . htmlspecialchars($title) . '</th>';
   print '<th>Plays</th>';
-
-  foreach ($graph_array as $item) {
-    print "<tr>";
-      print '<td class="label">' . htmlspecialchars($item['label']) . '</td>';
-      print '<td class="label">' . htmlspecialchars($item['count']) . '</td>';
-    print "</tr>";
-  }
   print '</table>';
 }
 
@@ -87,42 +80,39 @@ St.user_id = ' . $user->id . ';
 <br />
 
 <?php
-  $graphs = new Graphs($user->id, 10);
+  print '<br/>';
+  renderTopTable('top_artists_day', 'table_left', 'Top Artists (past day)');
+  renderTopTable('top_songs_day', 'table_right', 'Top Songs (past day)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past day)',
-    'top_artists_day');
-  renderTopTable($graphs->top_songs_day, 'table_right', 'Top Songs (past day)');
+  renderTopTable('top_artists_week', 'table_left', 'Top Artists (past week)');
+  renderTopTable('top_songs_week', 'table_right', 'Top Songs (past week)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past week)',
-    'top_artists_week');
-  renderTopTable($graphs->top_songs_week, 'table_right', 'Top Songs (past week)');
+  renderTopTable('top_artists_month', 'table_left',
+    'Top Artists (past month)');
+  renderTopTable('top_songs_month', 'table_right', 'Top Songs (past month)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past month)',
-    'top_artists_month');
-  renderTopTable($graphs->top_songs_1_month, 'table_right', 'Top Songs (past month)');
+  renderTopTable('top_artists_three_months', 'table_left',
+    'Top Artists (past 3 months)');
+  renderTopTable('top_songs_three_months', 'table_right',
+    'Top Songs (past 3 months)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past 3 months)',
-    'top_artists_three_months');
-  renderTopTable($graphs->top_songs_3_months, 'table_right', 'Top Songs (past 3 months)');
+  renderTopTable('top_artists_six_months', 'table_left',
+    'Top Artists (past 6 months)');
+  renderTopTable('top_songs_six_months', 'table_right',
+    'Top Songs (past 6 months)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past 6 months)',
-    'top_artists_six_months');
-  renderTopTable($graphs->top_songs_6_months, 'table_right', 'Top Songs (past 6 months)');
+  renderTopTable('top_artists_year', 'table_left', 'Top Artists (past year)');
+  renderTopTable('top_songs_year', 'table_right', 'Top Songs (past year)');
 
   print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (past year)',
-    'top_artists_year');
-  renderTopTable($graphs->top_songs_year, 'table_right', 'Top Songs (past year)');
-
-  print '<br/>';
-  renderTopTable(array(), 'table_left', 'Top Artists (all time)',
-    'top_artists_all_time');
-  renderTopTable($graphs->top_songs_all_time, 'table_right', 'Top Songs (all time)');
+  renderTopTable('top_artists_all_time', 'table_left',
+    'Top Artists (all time)');
+  renderTopTable('top_songs_all_time', 'table_right', 'Top Songs (all time)');
 
   // Invalid user given
   } else {
