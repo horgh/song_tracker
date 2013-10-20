@@ -18,24 +18,6 @@ class Graphs {
     $this->user_id = $user_id;
     $this->count = $count;
 
-    $sql_artists_all_time = '
-SELECT
-COUNT(s.id) AS count,
-s.artist AS label
-FROM play p
-JOIN song s
-ON p.song_id = s.id
-WHERE
-p.user_id = ?
-AND s.artist != \'N/A\'
-GROUP BY s.artist
-ORDER BY count DESC
-LIMIT ?
-';
-    $params = array($this->user_id, $this->count);
-    $this->top_artists_all_time = self::build_graph($sql_artists_all_time,
-      $params);
-
     $sql_songs_all_time = '
 SELECT
 COUNT(1) AS count,
@@ -53,13 +35,6 @@ LIMIT ?
     $this->top_songs_all_time = self::build_graph($sql_songs_all_time,
       $params);
 
-    $this->top_artists_year = self::top_artists_past_interval('1 year');
-    $this->top_artists_6_months = self::top_artists_past_interval('6 month');
-    $this->top_artists_3_months = self::top_artists_past_interval('3 month');
-    $this->top_artists_1_month = self::top_artists_past_interval('1 month');
-    $this->top_artists_week = self::top_artists_past_interval('1 week');
-    $this->top_artists_day = self::top_artists_past_interval('1 day');
-
     $this->top_songs_year = self::top_songs_past_interval('1 year');
     $this->top_songs_6_months = self::top_songs_past_interval('6 month');
     $this->top_songs_3_months = self::top_songs_past_interval('3 month');
@@ -68,31 +43,6 @@ LIMIT ?
     $this->top_songs_day = self::top_songs_past_interval('1 day');
 
     return true;
-  }
-
-  /*
-   * @param string $interval e.g. 1 month, 1 week, 1 day, etc
-   *
-   * @return array Graph array
-   */
-  private function top_artists_past_interval($interval) {
-    $sql = '
-SELECT
-COUNT(s.id) AS count,
-s.artist AS label
-FROM play p
-JOIN song s
-ON p.song_id = s.id
-WHERE
-p.user_id = ?
-AND s.artist != \'N/A\'
-AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
-GROUP BY s.artist
-ORDER BY count DESC
-LIMIT ?
-';
-    $params = array($this->user_id, $interval, $this->count);
-    return self::build_graph($sql, $params);
   }
 
   /*

@@ -18,6 +18,9 @@
 
  6. Begin updating to api.php!
 
+In order to see the top artists/songs charts you will need to now use
+run song_tracker2 which is a counterpart to this project.
+
 
 # URLs
 
