@@ -1,10 +1,30 @@
 <?php
-
 require_once('Database.php');
 require_once('Logger.php');
 require_once('util.Format.php');
 
 class API {
+  //! register a new user.
+  /*!
+   * @param string $username
+   * @param string $email
+   * @param string $password
+   *
+   * @return bool whether successful
+   */
+  public static function add_user($username, $email, $password) {
+    $db = Database::instance();
+    $sql = 'SELECT api_add_user(?, ?, ?) AS user_id';
+    $params = array($username, $email, $password);
+    try {
+      $rows = $db->select($sql, $params);
+    } catch (Exception $e) {
+      Logger::log("add_user: database failure: " . $e->getMessage());
+      return false;
+    }
+    return count($rows) === 1 && $rows[0]['user_id'] !== null;
+  }
+
   //! record a user's song play.
   /*!
    * @param string $username

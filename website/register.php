@@ -4,28 +4,34 @@
  */
 
 require_once(__DIR__ . '/config/config.php');
-require_once("src/model.User.php");
-require_once("src/Template.php");
+require_once(__DIR__ . '/src/Template.php');
+require_once(__DIR__ . '/src/API.php');
 
-Template::build_header("Registration");
+Template::build_header('Registration');
 
 if (isset($_POST['user']) && isset($_POST['email'])
 	&& isset($_POST['password']) && isset($_POST['password_confirm'])
   && isset($_POST['register']))
 {
-  if ($_POST['password'] !== $_POST['password_confirm']) {
+  $pass1 = trim($_POST['password']);
+  $pass2 = trim($_POST['password_confirm']);
+  $username = strtolower(trim($_POST['user']));
+  $email = strtolower(trim($_POST['email']));
+
+  if ($pass1 !== $pass2) {
     print "Passwords do not match!";
-  } else {
-    $user = new User();
-    if ($user->register($_POST['user'], $_POST['email'], $_POST['password'])) {
-      print "Registration successful.";
-    } else {
-      print "Registration failed. Username or e-mail already in use!";
-    }
+    exit;
   }
 
-// POST not received, show form
-} else {
+  if (API::add_user($username, $email, $pass1)) {
+    print "Registration successful.";
+  } else {
+    print "Registration failed. Username or e-mail already in use!";
+  }
+
+  exit;
+}
+
 ?>
 <h1>Registration</h1>
 <form action="register.php" method="POST"
@@ -52,6 +58,6 @@ if (isset($_POST['user']) && isset($_POST['email'])
     </tr>
   </table>
 </form>
+
 <?php
-}
 Template::build_footer();

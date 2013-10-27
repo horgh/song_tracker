@@ -3,11 +3,11 @@
  * Work with the users table
  */
 
-require_once("include/phpass/PasswordHash.php");
-require_once("Database.php");
-require_once("Logger.php");
-require_once("Model.php");
-require_once("model.Play.php");
+require_once('Database.php');
+require_once('Logger.php');
+require_once('Model.php');
+require_once('model.Play.php');
+require_once('model.Song.php');
 
 class User extends Model {
   protected $fields = array(
@@ -29,27 +29,6 @@ class User extends Model {
       return false;
     }
     return $this->query_by_field('name', $name);
-  }
-
-  /*
-   * @return bool Whether successful
-   */
-  public function register($user, $email, $password) {
-    if (strlen($user) === 0 || strlen($email) === 0
-      || strlen($password) === 0)
-    {
-      Logger::log("register: invalid user or email or password");
-      return false;
-    }
-
-    $hasher = new PasswordHash(12, FALSE);
-    $hash = $hasher->HashPassword($password);
-
-    $this->name = $user;
-    $this->email = $email;
-    $this->pass = $hash;
-
-    return $this->store();
   }
 
   /*

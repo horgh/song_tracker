@@ -121,6 +121,67 @@ END;
 $add_play$
 LANGUAGE plpgsql;
 
+-- @param VARCHAR p_username
+-- @param VARCHAR p_email
+-- @param VARCHAR p_password The provided password for the user
+--
+-- @return INTEGER The user's id, or NULL if failure.
+--
+-- @pre we expect all values to have their leading/trailing removed, and for
+--   the username and email to be in lowercase.
+--
+-- create a hashed password for the user and add them into the database.
+CREATE OR REPLACE FUNCTION
+api_add_user(VARCHAR, VARCHAR, VARCHAR)
+RETURNS INTEGER
+AS $api_add_user$
+DECLARE
+  p_username ALIAS FOR $1;
+  p_email ALIAS FOR $2;
+  p_password ALIAS FOR $3;
+  l_user_id INTEGER;
+BEGIN
+  IF LENGTH(p_username) = 0 OR LENGTH(p_email) = 0
+    OR LENGTH(p_password) = 0
+  THEN
+    RAISE NOTICE 'Username, email, and password must not be blank.';
+    RETURN NULL;
+  END IF;
+
+  -- ensure there is no user with this name or email yet.
+  PERFORM 1 FROM users
+  WHERE name = p_username OR email = p_email;
+  IF FOUND
+  THEN
+    RAISE NOTICE 'Username or email already in use.';
+    RETURN NULL;
+  END IF;
+
+  -- add the user.
+  SELECT NEXTVAL('users_id_seq') INTO l_user_id;
+  IF NOT FOUND
+  THEN
+    RAISE NOTICE 'Failed to retrieve next user id.';
+    RETURN NULL;
+  END IF;
+
+  INSERT INTO users
+  (id, name, email, pass)
+  VALUES(l_user_id, p_username, p_email,
+  -- blowfish. 8 iterations.
+  -- TODO: probably should have this as a configuration item.
+  crypt(p_password, gen_salt('bf', 8)));
+  IF NOT FOUND
+  THEN
+    RAISE NOTICE 'Failed to add the user.';
+    RETURN NULL;
+  END IF;
+
+  RETURN l_user_id;
+END;
+$api_add_user$
+LANGUAGE plpgsql;
+
 -- @param VARCHAR p_username The username that will have the play
 -- @param VARCHAR p_password The provided password for the user
 --

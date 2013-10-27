@@ -13,7 +13,6 @@
  */
 
 require_once(__DIR__ . '/config/config.php');
-
 require_once(__DIR__ . '/src/model.User.php');
 require_once(__DIR__ . '/src/API.php');
 

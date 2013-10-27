@@ -123,6 +123,12 @@ St.user_id = ' . $user->id . ';
 } else {
   Template::build_header("Welcome");
   print "Welcome to the song tracker.";
+
+  print '<p>';
+  print '<a href="register.php">';
+  print 'Register here';
+  print '</a>';
+  print '</p>';
 ?>
 
 <table>
