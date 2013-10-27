@@ -120,3 +120,95 @@ BEGIN
 END;
 $add_play$
 LANGUAGE plpgsql;
+
+-- @param VARCHAR p_username The username that will have the play
+-- @param VARCHAR p_password The provided password for the user
+--
+-- @return INTEGER The user's id, or NULL if not found or authentication
+--   failed
+--
+-- authenticate a user with the given password.
+CREATE OR REPLACE FUNCTION
+api_authenticate_user(VARCHAR, VARCHAR)
+RETURNS INTEGER
+AS $api_authenticate_user$
+DECLARE
+  p_username ALIAS FOR $1;
+  p_password ALIAS FOR $2;
+  l_user_id INTEGER;
+  l_hash VARCHAR;
+  l_hash_result VARCHAR;
+BEGIN
+  -- find the user's id and password hash.
+  SELECT id, pass INTO l_user_id, l_hash
+  FROM users WHERE name = p_username;
+  IF NOT FOUND
+  THEN
+    RAISE NOTICE 'User not found.';
+    RETURN NULL;
+  END IF;
+
+  -- check the password validity against the hash.
+  SELECT crypt(p_password, l_hash)
+  INTO l_hash_result;
+  IF NOT FOUND OR l_hash_result <> l_hash
+  THEN
+    RAISE NOTICE 'Authentication failure.';
+    RETURN NULL;
+  END IF;
+
+  RETURN l_user_id;
+END;
+$api_authenticate_user$
+LANGUAGE plpgsql;
+
+-- @param VARCHAR p_username The username that will have the play
+-- @param VARCHAR p_password The provided password for the user
+-- @param VARCHAR p_artist The artist name
+-- @param VARCHAR p_album The album name
+-- @param VARCHAR p_title The song title
+-- @param INTEGER p_length The song length
+--
+-- @return BOOLEAN Whether we were able to add the play
+--
+-- we authenticate the user using this password.
+--
+-- if valid, we record the play for the user.
+CREATE OR REPLACE FUNCTION
+api_add_user_play(VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR,
+INTEGER)
+RETURNS BOOLEAN
+AS $api_add_user_play$
+DECLARE
+  p_username ALIAS FOR $1;
+  p_password ALIAS FOR $2;
+  p_artist ALIAS FOR $3;
+  p_album ALIAS FOR $4;
+  p_title ALIAS FOR $5;
+  p_length ALIAS FOR $6;
+  l_user_id INTEGER;
+  l_bool BOOLEAN;
+BEGIN
+  SELECT api_authenticate_user(p_username, p_password)
+  INTO l_user_id;
+  IF NOT FOUND OR l_user_id IS NULL
+  THEN
+    RAISE NOTICE 'Authentication failure.';
+    RETURN FALSE;
+  END IF;
+
+  -- we do not validate any of the song details - that is handled by other
+  -- functions.
+
+  SELECT add_play(l_user_id, p_artist, p_album, p_title, p_length)
+  INTO l_bool;
+  IF NOT FOUND OR l_bool = FALSE
+  THEN
+    RAISE NOTICE 'Failed to add the play.';
+    RETURN FALSE;
+  END IF;
+
+  RETURN TRUE;
+END;
+$api_add_user_play$
+LANGUAGE plpgsql;

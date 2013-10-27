@@ -14,30 +14,19 @@
 
 require_once(__DIR__ . '/config/config.php');
 
-require_once("src/model.Song.php");
-require_once("src/model.User.php");
-require_once("src/model.Play.php");
+require_once(__DIR__ . '/src/model.User.php');
+require_once(__DIR__ . '/src/API.php');
 
 header('Content-type: text/plain; charset=utf-8');
 
-// Update sent
-if (isset($_POST['artist'])
-  && isset($_POST['album'])
-  && isset($_POST['title'])
-  && isset($_POST['length'])
-  && isset($_POST['pass'])
-  && isset($_POST['user']))
+// a play was sent.
+if (isset($_POST['artist']) && isset($_POST['album'])
+  && isset($_POST['title']) && isset($_POST['length'])
+  && isset($_POST['pass']) && isset($_POST['user']))
 {
-  $user = new User($_POST['user'], $_POST['pass']);
-  if (!$user->authenticate($_POST['user'], $_POST['pass'])) {
-    print "Invalid username or password.";
-    exit;
-  }
 
-  // TODO: respond with this information in the regular response - in json.
-
-  if (!Play::add_play($user, $_POST['artist'], $_POST['album'],
-    $_POST['title'], $_POST['length']))
+  if (!API::add_user_play($_POST['user'], $_POST['pass'], $_POST['artist'],
+    $_POST['album'], $_POST['title'], $_POST['length']))
   {
     print "Error recording the play.\n";
     print "api.php: Artist: " . $_POST['artist']

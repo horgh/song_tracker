@@ -3,11 +3,10 @@
  * Work with the play table
  */
 
-require_once("Database.php");
-require_once("Logger.php");
-require_once("Model.php");
-require_once("model.User.php");
-require_once("util.Format.php");
+require_once('Database.php');
+require_once('Logger.php');
+require_once('Model.php');
+require_once('model.User.php');
 
 class Play extends Model {
   protected $fields = array(
@@ -67,60 +66,5 @@ class Play extends Model {
       return -1;
     }
     return $rows[0]['count'];
-  }
-
-  //! store a new song play for a user.
-  /*!
-   * @param User $user
-   * @param string $artist
-   * @param string $album
-   * @param string $title
-   * @param mixed $length
-   *
-   * @return bool whether successful
-   *
-   * @pre The user must already be authenticated
-   *
-   * the artist or album may be blank. if so, they are stored as 'N/A'.
-   *
-   * the title is required.
-   *
-   * the length will be converted to milliseconds if possible.
-   */
-  public static function add_play(User $user, $artist, $album, $title,
-    $length)
-  {
-    // ensure we have the length in milliseconds.
-    $length = Format::fix_length($length);
-    if ($length === -1) {
-      Logger::log("add_play: failed to convert length to milliseconds");
-      return false;
-    }
-
-    // unknown artist/album ("") becomes "N/A"
-    if ($artist === "") {
-      $artist = "N/A";
-    }
-    if ($album === "") {
-      $album = "N/A";
-    }
-
-    // we do not allow a blank song title.
-    if ($title === "") {
-      Logger::log("add_play: invalid title");
-      return false;
-    }
-
-    $db = Database::instance();
-    $sql = 'SELECT add_play(?, ?, ?, ?, ?) AS success';
-    $params = array($user->id, $artist, $album, $title, $length);
-    try {
-      $rows = $db->select($sql, $params);
-    } catch (Exception $e) {
-      Logger::log("add_play: database failure: " . $e->getMessage());
-      return false;
-    }
-
-    return count($rows) === 1 && $rows[0]['success'] === true;
   }
 }

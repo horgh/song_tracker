@@ -53,25 +53,6 @@ class User extends Model {
   }
 
   /*
-   * @param string $name
-   * @param string $password Password given by user
-   *
-   * @return bool Whether user authenticates successfully
-   */
-  public function authenticate($name = "", $password = "") {
-    // if we have not yet loaded the data for the user from the database,
-    // look it up by their name.
-    if (!isset($this->id) && !$this->query_by_field('name', $name)) {
-      Logger::log("authenticate: failed to find user record");
-      return false;
-    }
-
-    $hasher = new PasswordHash(12, FALSE);
-    // $this->pass has the hashed password from the database
-    return $hasher->CheckPassword($password, $this->pass);
-  }
-
-  /*
    * @return array of strings: names of users from db
    */
   public static function get_users_names() {
