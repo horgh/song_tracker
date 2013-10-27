@@ -2,21 +2,31 @@
 
  - PHP 5.3+
  - PostgreSQL (recent version?)
+ - PostgreSQL pgcrypto module. This is typically packaged separately.
+   In debian it may be found in the 'postgresql-contrib' package.
+   This is needed as we currently use this for password hashing.
 
 
 # Setup
 
- 1. Create a database and a database user.
+ * Create a database and a database user.
 
- 2. Set ``$DB_`` variables to match the above in src/Database.php
+ * Enable the pgcrypto postgresql module in the database.
+   This must be done as the superuser.
 
- 3. Import schema_postgres.sql to this database.
+        CREATE EXTENSION pgcrypto;
 
- 4. Place website/ directory in a webserver accesible location.
+ * Set ``$DB_`` variables to match the above in src/Database.php
 
- 5. Visit http://your.website/music/register.php to register.
+ * Import schema_postgres.sql to this database.
 
- 6. Begin updating to api.php!
+ * Import database functions to the database (functions_postgres.sql).
+
+ * Place website/ directory in a webserver accesible location.
+
+ * Visit http://your.website/music/register.php to register.
+
+ * Begin updating plays to api.php.
 
 In order to see the top artists/songs charts you will need to now use
 run song_tracker2 which is a counterpart to this project.

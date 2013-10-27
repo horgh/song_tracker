@@ -69,133 +69,58 @@ class Play extends Model {
     return $rows[0]['count'];
   }
 
-  /*
+  //! store a new song play for a user.
+  /*!
+   * @param User $user
+   * @param string $artist
+   * @param string $album
+   * @param string $title
+   * @param mixed $length
+   *
    * @return bool whether successful
+   *
+   * @pre The user must already be authenticated
+   *
+   * the artist or album may be blank. if so, they are stored as 'N/A'.
+   *
+   * the title is required.
+   *
+   * the length will be converted to milliseconds if possible.
    */
   public static function add_play(User $user, $artist, $album, $title,
     $length)
   {
+    // ensure we have the length in milliseconds.
     $length = Format::fix_length($length);
+    if ($length === -1) {
+      Logger::log("add_play: failed to convert length to milliseconds");
+      return false;
+    }
 
     // unknown artist/album ("") becomes "N/A"
-    if ($artist == "") {
+    if ($artist === "") {
       $artist = "N/A";
     }
-    if ($album == "") {
+    if ($album === "") {
       $album = "N/A";
     }
 
-    // do not allow blank title
-    if ($title == "") {
+    // we do not allow a blank song title.
+    if ($title === "") {
       Logger::log("add_play: invalid title");
       return false;
     }
 
-    // do not add if last song for user is identical
-    //if (self::repeat($user->get_id(), $artist, $album, $title, $length)) {
-    //  return false;
-    //}
-
-    if ($user->authenticate()) {
-      Logger::log("add_play: invalid user");
-      return false;
-    }
-
-    // May need a new song record before the play
-    // XXX: insert song should check if it exists first !
-    $song_id = Song::insert_song($artist, $album, $title, $length);
-    if ($song_id == -1) {
-      Logger::log("add_play: failed to insert song");
-      return false;
-    }
-
     $db = Database::instance();
-    // Now we can record the play. However, if a play has occurred within
-    // the past few seconds that indicates the previous play was not really
-    // played (was switched away from 'instantaneously'), so remove that
-    // false play prior to adding ours
-    $db->beginTransaction();
-    if (self::remove_invalid_previous_play($user) === -1) {
-      $db->rollBack();
-      Logger::log("add_play: failure removing any invalid previous play");
-      return false;
-    }
-
-    // Record the play
-    $sql = "INSERT INTO play (song_id, user_id) VALUES(?, ?)";
-    $params = array($song_id, $user->id);
-    if ($db->manipulate($sql, $params, 1, true) !== 1) {
-      $db->rollBack();
-      Logger::log("add_play: unexpectedly did not have row affected");
-      return false;
-    }
-    $db->commit();
-    return true;
-  }
-
-  /*
-   * @param User $user
-   *
-   * @return int Number of plays removed, or -1 if failure
-   *
-   * We do not have to remove a play in order to be a success, only not
-   * encounter an error
-   *
-   * Remove a play if it is within some delta of the current time as we will
-   * assume that it was not really played (next play was too close to the
-   * previous)
-   *
-   * We require the song to be greater in length than the interval as well
-   */
-  private static function remove_invalid_previous_play(User $user) {
-    // XXX: make this a config variable
-    // 20 seconds!
-    $secs = 20;
-    // for margin of error, add 5 seconds to required song length
-    $millisecs = ($secs + 5) * 1000;
-    $sql = '
-DELETE FROM play p
-WHERE
-p.user_id = ?
-AND p.create_time > current_timestamp - CAST(? AS INTERVAL)
-AND p.song_id IN
-  (SELECT s.id
-   FROM song s
-   WHERE
-   s.id = p.song_id
-   AND s.length > ?
-  )
-';
-    $params = array($user->id, "$secs seconds", $millisecs);
-    $db = Database::instance();
+    $sql = 'SELECT add_play(?, ?, ?, ?, ?) AS success';
+    $params = array($user->id, $artist, $album, $title, $length);
     try {
-      $count = $db->manipulate($sql, $params, NULL, true);
+      $rows = $db->select($sql, $params);
     } catch (Exception $e) {
-      Logger::log("remove_invalid_previous_play: database failure: "
-        . $e->getMessage());
-      return -1;
-    }
-    Logger::log("remove_invalid_previous_play: Removed $count invalid"
-      . " prior plays.");
-    return $count;
-  }
-
-  /*
-   * @return bool Whether last played song is identical to this given song data
-   *
-   * Used by add_play()
-   */
-  private static function repeat(User $user, $artist, $album, $title, $length) {
-    $lastPlaySongs = User::get_users_latest_songs($user, 1);
-
-    // No plays yet: no repeat
-    if (count($lastPlaySongs) == 0) {
+      Logger::log("add_play: database failure: " . $e->getMessage());
       return false;
     }
 
-    $last = $lastPlaySongs[0];
-    return $last->artist == $artist && $last->album == $album
-      && $last->title == $title && $last->length == $length;
+    return count($rows) === 1 && $rows[0]['success'] === true;
   }
-
 }

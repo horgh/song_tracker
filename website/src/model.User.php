@@ -59,7 +59,8 @@ class User extends Model {
    * @return bool Whether user authenticates successfully
    */
   public function authenticate($name = "", $password = "") {
-    // Object may already have data from database
+    // if we have not yet loaded the data for the user from the database,
+    // look it up by their name.
     if (!isset($this->id) && !$this->query_by_field('name', $name)) {
       Logger::log("authenticate: failed to find user record");
       return false;

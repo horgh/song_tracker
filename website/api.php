@@ -35,9 +35,6 @@ if (isset($_POST['artist'])
   }
 
   // TODO: respond with this information in the regular response - in json.
-  //$debug = "album " . $_POST['artist'] . " album " . $_POST['album']
-  //  . " title " . $_POST['title'];
-  //print $debug . "\n";
 
   if (!Play::add_play($user, $_POST['artist'], $_POST['album'],
     $_POST['title'], $_POST['length']))
