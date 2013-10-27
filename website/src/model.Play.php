@@ -7,6 +7,7 @@ require_once('Database.php');
 require_once('Logger.php');
 require_once('Model.php');
 require_once('model.User.php');
+require_once('util.Format.php');
 
 class Play extends Model {
   protected $fields = array(
