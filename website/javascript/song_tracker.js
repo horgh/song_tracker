@@ -50,7 +50,8 @@ St.get_top_artists = function(element_id, days_back, next_requests) {
 		St.url_prefix + '/top/artists',
 		params,
 		function(data, textStatus, jqXHR) {
-			for (var i = 0; i < data.Counts.length; ++i) {
+			// data.Counts may be null if no counts found.
+			for (var i = 0; data.Counts && i < data.Counts.length; ++i) {
 				var count = data.Counts[i];
 				var tr = $('<tr>');
 				var label_td = $('<td>').text(count.Label)
@@ -107,7 +108,8 @@ St.get_top_songs = function(element_id, days_back, next_requests) {
 		St.url_prefix + '/top/songs',
 		params,
 		function(data, textStatus, jqXHR) {
-			for (var i = 0; i < data.Counts.length; ++i) {
+			// data.Counts may be null if no counts found.
+			for (var i = 0; data.Counts && i < data.Counts.length; ++i) {
 				var count = data.Counts[i];
 				var tr = $('<tr>');
 				var label_td = $('<td>').text(count.Label)
