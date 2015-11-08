@@ -12,7 +12,7 @@
 package require http
 package require tls
 
-::http::register https 443 ::tls::socket
+::http::register https 443 [list ::tls::socket -ssl2 0 -ssl3 0 -tls1 1]
 
 # @return mixed dict or 0 if failure
 #

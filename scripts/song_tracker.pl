@@ -1,5 +1,5 @@
 #
-# 20/08/2010
+# 2010-08-20
 # by horgh
 #
 # Irssi script that provides /np functionality (say current listening track
@@ -12,6 +12,9 @@
 
 use strict;
 use warnings;
+
+# need ssl constants
+use IO::Socket::SSL;
 
 # for ceil/floor
 use POSIX ();
@@ -27,13 +30,13 @@ use vars qw($VERSION %IRSSI);
 
 $VERSION = "0.1";
 %IRSSI = (
-	authors => "horgh",
-	contact => "will\@summercat.com",
-	name => "song_tracker",
+	authors     => "horgh",
+	contact     => "will\@summercat.com",
+	name        => "song_tracker",
 	description => "Provide now playing (/np) from song_tracker website",
-	license => "Public Domain",
-	url => "http://www.summercat.com",
-	changed => "20/08/10"
+	license     => "Public Domain",
+	url         => "http://www.summercat.com",
+	changed     => "2010-08-20",
 );
 
 # Configuration
@@ -56,6 +59,7 @@ sub get_song {
   $ua->ssl_opts(
                 # don't check cert
                 verify_hostname => 0,
+								SSL_verify_mode => SSL_VERIFY_NONE
                 );
   my $req = HTTP::Request->new(GET => $url,);
   my $res = $ua->request($req);
