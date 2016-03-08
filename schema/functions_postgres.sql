@@ -33,8 +33,11 @@ BEGIN
   END IF;
 
   -- try to find the song in the table already.
+  -- Don't use LIKE or ILIKE because then we have to worry about
+  -- escaping metacharacters and \.
   SELECT id INTO l_song_id FROM song
-  WHERE artist ILIKE p_artist AND album ILIKE p_album AND title ILIKE p_title;
+  WHERE LOWER(artist) = LOWER(p_artist) AND
+    LOWER(album) = LOWER(p_album) AND LOWER(title) = LOWER(p_title);
   IF FOUND
   THEN
     RETURN l_song_id;
