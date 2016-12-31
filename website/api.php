@@ -2,7 +2,10 @@
 /*
  * Provide API functions:
  *  - new play: POST: user, pass, artist, album, title, length
- *  - last play: GET: user, last
+ *  - last play: GET: user, last. 'last' is there simply so we can tell what
+ *    request it is.
+ *    Optional: format. This may be either plaintext or json. If not provided,
+ *    we default to plaintext (for backwards compatibility).
  *
  * NOTE: Response is plaintext UTF-8. No HTML encoding or anything.
  *
@@ -42,6 +45,12 @@ if (isset($_POST['artist']) && isset($_POST['album']) &&
 if (isset($_GET['last']) && isset($_GET['user'])) {
   $user = new User();
 
+  $format = 'plaintext';
+  if (array_key_exists('format', $_GET) && is_string($_GET['format']) &&
+    $_GET['format'] === 'json') {
+    $format = 'json';
+  }
+
   if (!$user->query_by_name($_GET['user'])) {
     print "Invalid user.\n";
     exit;
@@ -51,8 +60,32 @@ if (isset($_GET['last']) && isset($_GET['user'])) {
 
   if (count($lastSongPlay) === 1) {
     $song = $lastSongPlay[0];
-    print $song->artist . " - " . $song->album . " - " . $song->title
-          . " (" . $song->length . ")\n";
+
+    if ($format === 'plaintext') {
+      print $song->artist . " - " . $song->album . " - " . $song->title
+            . " (" . $song->length . ")\n";
+      exit;
+    }
+
+    if ($format === 'json') {
+      $raw = array(
+        'artist' => $song->artist,
+        'album'  => $song->album,
+        'title'  => $song->title,
+        'length' => $song->length,
+      );
+
+      $json = json_encode($raw, JSON_PRETTY_PRINT);
+      if (false === $json) {
+        print "Unable to encode to JSON\n";
+        exit;
+      }
+
+      print $json;
+      exit;
+    }
+
+    print "Unknown response format\n";
     exit;
   }
 
